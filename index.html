@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>かな入力れんしゅう</title>
+  <style>
+    :root{
+      --bg:#f7f8fc;
+      --panel:#ffffff;
+      --text:#1c2230;
+      --muted:#667085;
+      --line:#d9dfeb;
+      --accent:#6aa8ff;
+      --ok:#22c55e;
+      --ng:#ef4444;
+      --shadow:0 12px 30px rgba(24,39,75,.10);
+      --pink:#ff9fc5;
+      --orange:#ffbf70;
+      --yellow:#ffe67a;
+      --green:#97e58f;
+      --blue:#8fd4ff;
+      --purple:#c6a6ff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic","Meiryo",sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,223,122,.25), transparent 18%),
+        radial-gradient(circle at 80% 10%, rgba(143,212,255,.22), transparent 20%),
+        radial-gradient(circle at 85% 80%, rgba(198,166,255,.18), transparent 20%),
+        linear-gradient(180deg,#fbfcff 0%,#f2f6ff 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:20px 16px 28px;
+    }
+
+    .topbar{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:start;
+      margin-bottom:14px;
+    }
+
+    .title{
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:.04em;
+      margin:0 0 6px;
+    }
+
+    .subtitle{
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.6;
+      margin:0;
+    }
+
+    .scorebox{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:12px 14px;
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      min-width:290px;
+    }
+
+    .stat{min-width:78px}
+    .stat .k{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:4px;
+    }
+    .stat .v{
+      font-size:24px;
+      font-weight:900;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin-bottom:16px;
+    }
+
+    .mode-grid{
+      display:grid;
+      grid-template-columns:repeat(6,minmax(0,1fr));
+      gap:10px;
+    }
+
+    .mode-btn{
+      border:none;
+      background:#f4f7ff;
+      color:#25314e;
+      border-radius:16px;
+      padding:14px 10px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      transition:.15s transform,.15s background,.15s box-shadow;
+      box-shadow:inset 0 0 0 1px #dce5ff;
+    }
+    .mode-btn:hover{transform:translateY(-1px)}
+    .mode-btn.active{
+      background:linear-gradient(180deg,#7fb4ff 0%,#5f95ff 100%);
+      color:#fff;
+      box-shadow:0 10px 20px rgba(95,149,255,.28);
+    }
+
+    .main{
+      display:grid;
+      grid-template-columns:1.2fr .92fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .game{
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero{
+      position:relative;
+      border-radius:22px;
+      padding:22px 18px 18px;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(255,191,112,.18), transparent 18%),
+        radial-gradient(circle at 88% 12%, rgba(143,212,255,.16), transparent 20%),
+        linear-gradient(180deg,#ffffff 0%,#f8fbff 100%);
+      border:1px solid var(--line);
+      min-height:300px;
+    }
+
+    .badge-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-bottom:10px;
+    }
+    .badge{
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:800;
+      background:#eef4ff;
+      color:#29406f;
+      border:1px solid #d9e5ff;
+    }
+
+    .kana{
+      text-align:center;
+      font-size:clamp(54px,10vw,108px);
+      line-height:1.05;
+      font-weight:900;
+      letter-spacing:.08em;
+      margin:14px 0 4px;
+    }
+
+    .reading{
+      text-align:center;
+      font-size:18px;
+      color:var(--muted);
+      min-height:28px;
+      font-weight:800;
+    }
+
+    .seq{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin:16px 0 12px;
+      flex-wrap:wrap;
+    }
+
+    .seq-key{
+      min-width:68px;
+      height:68px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      background:#f4f8ff;
+      border:2px solid #d7e4ff;
+      font-weight:900;
+      box-shadow:0 5px 0 #d7e4ff;
+      position:relative;
+    }
+    .seq-key.current{
+      background:#fff5c9;
+      border-color:#ffd84d;
+      box-shadow:0 5px 0 #ffd84d,0 0 0 8px rgba(255,216,77,.18);
+      transform:translateY(-1px);
+    }
+    .seq-key.done{
+      background:#dff7e6;
+      border-color:#5ad37e;
+      box-shadow:0 5px 0 #5ad37e;
+    }
+    .seq-key small{
+      font-size:12px;
+      color:#6a7285;
+      line-height:1;
+      margin-top:4px;
+    }
+
+    .message{
+      text-align:center;
+      font-weight:900;
+      min-height:32px;
+      font-size:20px;
+    }
+    .message.ok{color:var(--ok)}
+    .message.ng{color:var(--ng)}
+
+    .action-row{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
+    .big-btn{
+      border:none;
+      border-radius:16px;
+      padding:14px 18px;
+      font-size:18px;
+      font-weight:900;
+      cursor:pointer;
+      color:#fff;
+      background:linear-gradient(180deg,#71b0ff 0%,#4e8fff 100%);
+      box-shadow:0 12px 24px rgba(78,143,255,.25);
+    }
+    .big-btn.secondary{
+      color:#25314e;
+      background:#eef4ff;
+      box-shadow:none;
+      border:1px solid #d9e5ff;
+    }
+
+    .hint{
+      text-align:center;
+      color:var(--muted);
+      font-size:13px;
+      margin-top:12px;
+      font-weight:700;
+    }
+
+    .hand-legend{
+      display:grid;
+      grid-template-columns:repeat(8,1fr);
+      gap:8px;
+      margin:18px 0 0;
+    }
+    .finger{
+      padding:10px 6px;
+      border-radius:14px;
+      text-align:center;
+      font-size:13px;
+      font-weight:900;
+      border:1px solid rgba(0,0,0,.06);
+    }
+    .f-lp{background:var(--pink)}
+    .f-lr{background:var(--orange)}
+    .f-lm{background:var(--yellow)}
+    .f-li{background:var(--green)}
+    .f-ri{background:var(--blue)}
+    .f-rm{background:#bfe8ff}
+    .f-rr{background:#d6c1ff}
+    .f-rp{background:#efb5ff}
+
+    .side{
+      display:grid;
+      gap:16px;
+    }
+
+    .mini-title{
+      font-size:18px;
+      font-weight:900;
+      margin:0 0 12px;
+    }
+
+    .keyboard{
+      background:#edf3ff;
+      border-radius:24px;
+      border:1px solid #d8e4ff;
+      padding:14px;
+      overflow:auto;
+    }
+
+    .kb-row{
+      display:flex;
+      gap:8px;
+      margin-bottom:8px;
+      align-items:stretch;
+    }
+    .kb-row:last-child{margin-bottom:0}
+
+    .key{
+      width:56px;
+      height:56px;
+      border-radius:14px;
+      position:relative;
+      background:#fff;
+      border:1px solid rgba(33,53,92,.08);
+      box-shadow:0 5px 0 rgba(177,191,222,.9);
+      flex:0 0 auto;
+      transition:.08s transform,.08s box-shadow,.08s border,.08s background;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .key.wide-2{width:88px}
+    .key.wide-25{width:102px}
+    .key.wide-3{width:122px}
+    .key.wide-35{width:146px}
+    .key.wide-4{width:174px}
+    .key.wide-6{width:310px}
+
+    .key .kana-top{
+      position:absolute;
+      top:8px;
+      left:10px;
+      font-size:21px;
+      font-weight:900;
+      color:#1c2230;
+      line-height:1;
+    }
+    .key .latin{
+      position:absolute;
+      right:9px;
+      bottom:7px;
+      font-size:11px;
+      color:#4f5b74;
+      font-weight:800;
+      line-height:1;
+      letter-spacing:.03em;
+    }
+    .key .special{
+      font-size:13px;
+      font-weight:900;
+      color:#556179;
+    }
+
+    .lp{background:linear-gradient(180deg,#ffd1e2,#ffb7d2)}
+    .lr{background:linear-gradient(180deg,#ffd7aa,#ffc37e)}
+    .lm{background:linear-gradient(180deg,#fff2a8,#ffe67a)}
+    .li{background:linear-gradient(180deg,#ccf7c7,#a9ed9f)}
+    .ri{background:linear-gradient(180deg,#d3f2ff,#aee5ff)}
+    .rm{background:linear-gradient(180deg,#def4ff,#c6e9ff)}
+    .rr{background:linear-gradient(180deg,#eadcff,#d7c0ff)}
+    .rp{background:linear-gradient(180deg,#f7d6ff,#efbbff)}
+    .thumb{background:linear-gradient(180deg,#f3f5f8,#e7ecf4)}
+
+    .key.target{
+      border:2px solid #ffd84d;
+      box-shadow:0 0 0 7px rgba(255,216,77,.2),0 5px 0 #ffd84d;
+      transform:translateY(-1px);
+      z-index:2;
+    }
+    .key.hit{
+      border:2px solid #56d57d;
+      box-shadow:0 0 0 7px rgba(86,213,125,.18),0 5px 0 #56d57d;
+    }
+    .key.wrong{
+      border:2px solid #ff7b7b;
+      box-shadow:0 0 0 7px rgba(255,123,123,.16),0 5px 0 #ff7b7b;
+      animation:shake .18s linear 1;
+    }
+
+    @keyframes shake{
+      0%{transform:translateX(0)}
+      25%{transform:translateX(-3px)}
+      50%{transform:translateX(3px)}
+      75%{transform:translateX(-2px)}
+      100%{transform:translateX(0)}
+    }
+
+    .queue{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+    }
+
+    .next-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .chip{
+      padding:8px 11px;
+      border-radius:999px;
+      background:#f4f7ff;
+      border:1px solid #dde6ff;
+      font-weight:900;
+      font-size:14px;
+    }
+
+    .result{
+      display:none;
+      margin-top:14px;
+      border-radius:18px;
+      background:#f7fbff;
+      border:1px solid #dbe8ff;
+      padding:14px;
+    }
+    .result.show{display:block}
+    .result-grid{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:10px;
+      margin-top:10px;
+    }
+    .result-item{
+      background:#fff;
+      border:1px solid #dde6ff;
+      border-radius:16px;
+      padding:12px;
+      text-align:center;
+    }
+    .result-item .k{font-size:12px;color:var(--muted);font-weight:800}
+    .result-item .v{font-size:24px;font-weight:900;margin-top:4px}
+
+    canvas#fx{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    @media (max-width:1100px){
+      .main{grid-template-columns:1fr}
+      .mode-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+    @media (max-width:780px){
+      .topbar{grid-template-columns:1fr}
+      .scorebox{justify-content:flex-start}
+      .mode-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .queue{grid-template-columns:1fr}
+      .result-grid{grid-template-columns:repeat(2,1fr)}
+      .hand-legend{grid-template-columns:repeat(4,1fr)}
+      .key{width:48px;height:48px}
+      .key.wide-2{width:76px}
+      .key.wide-25{width:86px}
+      .key.wide-3{width:108px}
+      .key.wide-35{width:126px}
+      .key.wide-4{width:146px}
+      .key.wide-6{width:258px}
+      .key .kana-top{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div>
+        <h1 class="title">かな入力れんしゅう</h1>
+        <p class="subtitle">
+          かなキーの位置と、どの指で押すかを見ながらおぼえるれんしゅう。
+          Enterでスタート。JISキーボード配列の見た目で、ひらがな・濁音・半濁音・拗音までれんしゅうできます。
+        </p>
+      </div>
+      <div class="scorebox">
+        <div class="stat"><div class="k">モード</div><div class="v" id="modeName">通し</div></div>
+        <div class="stat"><div class="k">せいかい</div><div class="v" id="correctCount">0</div></div>
+        <div class="stat"><div class="k">ミス</div><div class="v" id="missCount">0</div></div>
+        <div class="stat"><div class="k">れんぞく</div><div class="v" id="streakCount">0</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="mode-grid" id="modeGrid"></div>
+    </div>
+
+    <div class="main">
+      <div class="panel game">
+        <canvas id="fx"></canvas>
+        <div class="hero">
+          <div class="badge-row">
+            <div class="badge" id="statusBadge">Enterでスタート</div>
+            <div class="badge" id="groupBadge">通しモード</div>
+            <div class="badge" id="progressBadge">0 / 0</div>
+          </div>
+
+          <div class="kana" id="questionKana">あ</div>
+          <div class="reading" id="questionReading">つぎのキーをおしてみよう</div>
+
+          <div class="seq" id="sequenceView"></div>
+
+          <div class="message" id="message"></div>
+
+          <div class="action-row">
+            <button class="big-btn" id="startBtn">スタート</button>
+            <button class="big-btn secondary" id="nextBtn">つぎへ</button>
+          </div>
+
+          <div class="hint">かな入力ONでもOFFでも、見本どおりの物理キーを押せばOK</div>
+
+          <div class="hand-legend">
+            <div class="finger f-lp">左小指</div>
+            <div class="finger f-lr">左薬指</div>
+            <div class="finger f-lm">左中指</div>
+            <div class="finger f-li">左人差し指</div>
+            <div class="finger f-ri">右人差し指</div>
+            <div class="finger f-rm">右中指</div>
+            <div class="finger f-rr">右薬指</div>
+            <div class="finger f-rp">右小指</div>
+          </div>
+
+          <div class="result" id="resultBox">
+            <div class="mini-title">けっか</div>
+            <div class="result-grid">
+              <div class="result-item"><div class="k">せいかい</div><div class="v" id="rCorrect">0</div></div>
+              <div class="result-item"><div class="k">ミス</div><div class="v" id="rMiss">0</div></div>
+              <div class="result-item"><div class="k">せいかくりつ</div><div class="v" id="rAcc">0%</div></div>
+              <div class="result-item"><div class="k">ベスト</div><div class="v" id="rBest">0%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side">
+        <div class="panel">
+          <h2 class="mini-title">キーボード</h2>
+          <div class="keyboard" id="keyboard"></div>
+        </div>
+
+        <div class="queue">
+          <div class="card">
+            <h2 class="mini-title">つぎにでるもじ</h2>
+            <div class="next-list" id="nextList"></div>
+          </div>
+          <div class="card">
+            <h2 class="mini-title">ベストきろく</h2>
+            <div id="bestList" style="display:grid;gap:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====== かな入力の物理キー対応（JISかな配列向け） ======
+    const KEYMAP = {
+      "ぬ":[{code:"Digit1", label:"1 / ぬ"}],
+      "ふ":[{code:"Digit2", label:"2 / ふ"}],
+      "あ":[{code:"Digit3", label:"3 / あ"}],
+      "う":[{code:"Digit4", label:"4 / う"}],
+      "え":[{code:"Digit5", label:"5 / え"}],
+      "お":[{code:"Digit6", label:"6 / お"}],
+      "や":[{code:"Digit7", label:"7 / や"}],
+      "ゆ":[{code:"Digit8", label:"8 / ゆ"}],
+      "よ":[{code:"Digit9", label:"9 / よ"}],
+      "わ":[{code:"Digit0", label:"0 / わ"}],
+      "ほ":[{code:"Minus", label:"- / ほ"}],
+      "へ":[{code:"Equal", label:"^ / へ"}],
+
+      "た":[{code:"KeyQ", label:"Q / た"}],
+      "て":[{code:"KeyW", label:"W / て"}],
+      "い":[{code:"KeyE", label:"E / い"}],
+      "す":[{code:"KeyR", label:"R / す"}],
+      "か":[{code:"KeyT", label:"T / か"}],
+      "ん":[{code:"KeyY", label:"Y / ん"}],
+      "な":[{code:"KeyU", label:"U / な"}],
+      "に":[{code:"KeyI", label:"I / に"}],
+      "ら":[{code:"KeyO", label:"O / ら"}],
+      "せ":[{code:"KeyP", label:"P / せ"}],
+      "゛":[{code:"BracketLeft", label:"@ / ゛"}],
+      "゜":[{code:"BracketRight", label:"[ / ゜"}],
+
+      "ち":[{code:"KeyA", label:"A / ち"}],
+      "と":[{code:"KeyS", label:"S / と"}],
+      "し":[{code:"KeyD", label:"D / し"}],
+      "は":[{code:"KeyF", label:"F / は"}],
+      "き":[{code:"KeyG", label:"G / き"}],
+      "く":[{code:"KeyH", label:"H / く"}],
+      "ま":[{code:"KeyJ", label:"J / ま"}],
+      "の":[{code:"KeyK", label:"K / の"}],
+      "り":[{code:"KeyL", label:"L / り"}],
+      "れ":[{code:"Semicolon", label:"; / れ"}],
+      "け":[{code:"Quote", label:": / け"}],
+      "む":[{code:"Backslash", label:"] / む"}],
+
+      "つ":[{code:"KeyZ", label:"Z / つ"}],
+      "さ":[{code:"KeyX", label:"X / さ"}],
+      "そ":[{code:"KeyC", label:"C / そ"}],
+      "ひ":[{code:"KeyV", label:"V / ひ"}],
+      "こ":[{code:"KeyB", label:"B / こ"}],
+      "み":[{code:"KeyN", label:"N / み"}],
+      "も":[{code:"KeyM", label:"M / も"}],
+      "ね":[{code:"Comma", label:", / ね"}],
+      "る":[{code:"Period", label:". / る"}],
+      "め":[{code:"Slash", label:"/ / め"}],
+      "ろ":[{code:"IntlRo", label:"\\ / ろ"}],
+
+      "ー":[{code:"IntlYen", label:"¥ / ー"}],
+
+      // 小文字（Shiftつき）
+      "ぁ":[{code:"Digit3", shift:true, label:"Shift + 3 / ぁ"}],
+      "ぃ":[{code:"KeyE", shift:true, label:"Shift + E / ぃ"}],
+      "ぅ":[{code:"Digit4", shift:true, label:"Shift + 4 / ぅ"}],
+      "ぇ":[{code:"Digit5", shift:true, label:"Shift + 5 / ぇ"}],
+      "ぉ":[{code:"Digit6", shift:true, label:"Shift + 6 / ぉ"}],
+      "ゃ":[{code:"Digit7", shift:true, label:"Shift + 7 / ゃ"}],
+      "ゅ":[{code:"Digit8", shift:true, label:"Shift + 8 / ゅ"}],
+      "ょ":[{code:"Digit9", shift:true, label:"Shift + 9 / ょ"}],
+      "っ":[{code:"KeyZ", shift:true, label:"Shift + Z / っ"}]
+    };
+
+    // 1文字を打つためのキー列
+    function seqFor(text){
+      const list = [];
+      for (const ch of text) {
+        if (!KEYMAP[ch]) continue;
+        list.push(...KEYMAP[ch]);
+      }
+      return list;
+    }
+
+    // ====== 出題セット ======
+    const GROUPS = {
+      "通し": [
+        "あ","い","う","え","お",
+        "か","き","く","け","こ",
+        "さ","し","す","せ","そ",
+        "た","ち","つ","て","と",
+        "な","に","ぬ","ね","の",
+        "は","ひ","ふ","へ","ほ",
+        "ま","み","む","め","も",
+        "や","ゆ","よ",
+        "ら","り","る","れ","ろ",
+        "わ","ん",
+        "が","ぎ","ぐ","げ","ご",
+        "ざ","じ","ず","ぜ","ぞ",
+        "だ","ぢ","づ","で","ど",
+        "ば","び","ぶ","べ","ぼ",
+        "ぱ","ぴ","ぷ","ぺ","ぽ",
+        "きゃ","きゅ","きょ",
+        "しゃ","しゅ","しょ",
+        "ちゃ","ちゅ","ちょ",
+        "にゃ","にゅ","にょ",
+        "ひゃ","ひゅ","ひょ",
+        "みゃ","みゅ","みょ",
+        "りゃ","りゅ","りょ",
+        "ぎゃ","ぎゅ","ぎょ",
+        "じゃ","じゅ","じょ",
+        "びゃ","びゅ","びょ",
+        "ぴゃ","ぴゅ","ぴょ"
+      ],
+      "あ行": ["あ","い","う","え","お"],
+      "か行": ["か","き","く","け","こ"],
+      "さ行": ["さ","し","す","せ","そ"],
+      "た行": ["た","ち","つ","て","と"],
+      "な行": ["な","に","ぬ","ね","の"],
+      "は行": ["は","ひ","ふ","へ","ほ"],
+      "ま行": ["ま","み","む","め","も"],
+      "や行": ["や","ゆ","よ"],
+      "ら行": ["ら","り","る","れ","ろ"],
+      "わ行": ["わ","ん"],
+      "濁音": [
+        "が","ぎ","ぐ","げ","ご",
+        "ざ","じ","ず","ぜ","ぞ",
+        "だ","ぢ","づ","で","ど",
+        "ば","び","ぶ","べ","ぼ"
+      ],
+      "半濁音": ["ぱ","ぴ","ぷ","ぺ","ぽ"],
+      "拗音": [
+        "きゃ","きゅ","きょ",
+        "しゃ","しゅ","しょ",
+        "ちゃ","ちゅ","ちょ",
+        "にゃ","にゅ","にょ",
+        "ひゃ","ひゅ","ひょ",
+        "みゃ","みゅ","みょ",
+        "りゃ","りゅ","りょ",
+        "ぎゃ","ぎゅ","ぎょ",
+        "じゃ","じゅ","じょ",
+        "びゃ","びゅ","びょ",
+        "ぴゃ","ぴゅ","ぴょ"
+      ]
+    };
+
+    // 濁音・半濁音・拗音の分解
+    const COMPOSE = {
+      "が":"か゛","ぎ":"き゛","ぐ":"く゛","げ":"け゛","ご":"こ゛",
+      "ざ":"さ゛","じ":"し゛","ず":"す゛","ぜ":"せ゛","ぞ":"そ゛",
+      "だ":"た゛","ぢ":"ち゛","づ":"つ゛","で":"て゛","ど":"と゛",
+      "ば":"は゛","び":"ひ゛","ぶ":"ふ゛","べ":"へ゛","ぼ":"ほ゛",
+      "ぱ":"は゜","ぴ":"ひ゜","ぷ":"ふ゜","ぺ":"へ゜","ぽ":"ほ゜",
+
+      "きゃ":"きゃ","きゅ":"きゅ","きょ":"きょ",
+      "しゃ":"しゃ","しゅ":"しゅ","しょ":"しょ",
+      "ちゃ":"ちゃ","ちゅ":"ちゅ","ちょ":"ちょ",
+      "にゃ":"にゃ","にゅ":"にゅ","にょ":"にょ",
+      "ひゃ":"ひゃ","ひゅ":"ひゅ","ひょ":"ひょ",
+      "みゃ":"みゃ","みゅ":"みょ".replace("みょ","みょ"),
+      "りゃ":"りゃ","りゅ":"りゅ","りょ":"りょ",
+      "ぎゃ":"き゛ゃ","ぎゅ":"き゛ゅ","ぎょ":"き゛ょ",
+      "じゃ":"し゛ゃ","じゅ":"し゛ゅ","じょ":"し゛ょ",
+      "びゃ":"ひ゛ゃ","びゅ":"ひ゛ゅ","びょ":"ひ゛ょ",
+      "ぴゃ":"ひ゜ゃ","ぴゅ":"ひ゜ゅ","ぴょ":"ひ゜ょ"
+    };
+
+    function toSequenceString(word){
+      return COMPOSE[word] || word;
+    }
+
+    // ====== キーボード描画 ======
+    const KB_LAYOUT = [
+      [
+        {special:"半/全", w:"wide-2", finger:"lp"},
+        {kana:"ぬ", latin:"1"}, {kana:"ふ", latin:"2"}, {kana:"あ", latin:"3"}, {kana:"う", latin:"4"},
+        {kana:"え", latin:"5"}, {kana:"お", latin:"6"}, {kana:"や", latin:"7"}, {kana:"ゆ", latin:"8"},
+        {kana:"よ", latin:"9"}, {kana:"わ", latin:"0"}, {kana:"ほ", latin:"-"}, {kana:"へ", latin:"^"},
+        {special:"Backspace", w:"wide-2", finger:"rp"}
+      ],
+      [
+        {special:"Tab", w:"wide-25", finger:"lp"},
+        {kana:"た", latin:"Q"}, {kana:"て", latin:"W"}, {kana:"い", latin:"E"}, {kana:"す", latin:"R"},
+        {kana:"か", latin:"T"}, {kana:"ん", latin:"Y"}, {kana:"な", latin:"U"}, {kana:"に", latin:"I"},
+        {kana:"ら", latin:"O"}, {kana:"せ", latin:"P"}, {kana:"゛", latin:"@"}, {kana:"゜", latin:"["},
+        {special:"Enter", w:"wide-25", finger:"rp"}
+      ],
+      [
+        {special:"Caps", w:"wide-3", finger:"lp"},
+        {kana:"ち", latin:"A"}, {kana:"と", latin:"S"}, {kana:"し", latin:"D"}, {kana:"は", latin:"F"},
+        {kana:"き", latin:"G"}, {kana:"く", latin:"H"}, {kana:"ま", latin:"J"}, {kana:"の", latin:"K"},
+        {kana:"り", latin:"L"}, {kana:"れ", latin:";"}, {kana:"け", latin:":"}, {kana:"む", latin:"]"}
+      ],
+      [
+        {special:"Shift", w:"wide-35", finger:"lp"},
+        {kana:"つ", latin:"Z"}, {kana:"さ", latin:"X"}, {kana:"そ", latin:"C"}, {kana:"ひ", latin:"V"},
+        {kana:"こ", latin:"B"}, {kana:"み", latin:"N"}, {kana:"も", latin:"M"}, {kana:"ね", latin:","},
+        {kana:"る", latin:"."}, {kana:"め", latin:"/"}, {kana:"ろ", latin:"\\"},
+        {special:"Shift", w:"wide-35", finger:"rp"}
+      ],
+      [
+        {special:"Ctrl", w:"wide-2", finger:"lp"},
+        {special:"Fn", finger:"lp"},
+        {special:"Alt", w:"wide-2", finger:"li"},
+        {special:"無変換", w:"wide-2", finger:"li"},
+        {special:"Space", w:"wide-6", finger:"thumb"},
+        {special:"変換", w:"wide-2", finger:"ri"},
+        {special:"かな", w:"wide-2", finger:"rp"},
+        {special:"Ctrl", w:"wide-2", finger:"rp"}
+      ]
+    ];
+
+    const CODE_TO_KEY_ID = {
+      Digit1:"Digit1", Digit2:"Digit2", Digit3:"Digit3", Digit4:"Digit4", Digit5:"Digit5", Digit6:"Digit6",
+      Digit7:"Digit7", Digit8:"Digit8", Digit9:"Digit9", Digit0:"Digit0", Minus:"Minus", Equal:"Equal",
+      KeyQ:"KeyQ", KeyW:"KeyW", KeyE:"KeyE", KeyR:"KeyR", KeyT:"KeyT", KeyY:"KeyY", KeyU:"KeyU", KeyI:"KeyI", KeyO:"KeyO", KeyP:"KeyP",
+      BracketLeft:"BracketLeft", BracketRight:"BracketRight",
+      KeyA:"KeyA", KeyS:"KeyS", KeyD:"KeyD", KeyF:"KeyF", KeyG:"KeyG", KeyH:"KeyH", KeyJ:"KeyJ", KeyK:"KeyK", KeyL:"KeyL",
+      Semicolon:"Semicolon", Quote:"Quote", Backslash:"Backslash",
+      KeyZ:"KeyZ", KeyX:"KeyX", KeyC:"KeyC", KeyV:"KeyV", KeyB:"KeyB", KeyN:"KeyN", KeyM:"KeyM",
+      Comma:"Comma", Period:"Period", Slash:"Slash", IntlRo:"IntlRo", IntlYen:"IntlYen",
+      ShiftLeft:"ShiftLeft", ShiftRight:"ShiftRight", Space:"Space"
+    };
+
+    const keyboardEl = document.getElementById("keyboard");
+
+    function fingerClass(f){
+      return f || "thumb";
+    }
+
+    function buildKeyboard(){
+      keyboardEl.innerHTML = "";
+      KB_LAYOUT.forEach((row, rIdx) => {
+        const rowEl = document.createElement("div");
+        rowEl.className = "kb-row";
+        row.forEach((k, i) => {
+          const key = document.createElement("div");
+          key.className = `key ${k.w || ""} ${fingerClass(k.finger)}`.trim();
+
+          if (k.kana) {
+            key.innerHTML = `<div class="kana-top">${k.kana}</div><div class="latin">${k.latin}</div>`;
+            const codeGuess = guessCodeByKana(k.kana, k.latin);
+            if (codeGuess) key.dataset.code = codeGuess;
+          } else {
+            key.innerHTML = `<div class="special">${k.special}</div>`;
+            const specialCode = guessSpecialCode(k.special, rIdx, i);
+            if (specialCode) key.dataset.code = specialCode;
+          }
+          rowEl.appendChild(key);
+        });
+        keyboardEl.appendChild(rowEl);
+      });
+    }
+
+    function guessCodeByKana(kana, latin){
+      const entries = Object.entries(KEYMAP);
+      const found = entries.find(([ch, arr]) => ch === kana && arr[0] && !arr[0].shift);
+      return found ? found[1][0].code : null;
+    }
+
+    function guessSpecialCode(name, row, index){
+      if (name === "Space") return "Space";
+      if (name === "Shift" && row === 3 && index === 0) return "ShiftLeft";
+      if (name === "Shift" && row === 3) return "ShiftRight";
+      return null;
+    }
+
+    buildKeyboard();
+
+    // ====== 状態 ======
+    const els = {
+      modeGrid:document.getElementById("modeGrid"),
+      modeName:document.getElementById("modeName"),
+      correctCount:document.getElementById("correctCount"),
+      missCount:document.getElementById("missCount"),
+      streakCount:document.getElementById("streakCount"),
+      statusBadge:document.getElementById("statusBadge"),
+      groupBadge:document.getElementById("groupBadge"),
+      progressBadge:document.getElementById("progressBadge"),
+      questionKana:document.getElementById("questionKana"),
+      questionReading:document.getElementById("questionReading"),
+      sequenceView:document.getElementById("sequenceView"),
+      message:document.getElementById("message"),
+      startBtn:document.getElementById("startBtn"),
+      nextBtn:document.getElementById("nextBtn"),
+      nextList:document.getElementById("nextList"),
+      bestList:document.getElementById("bestList"),
+      resultBox:document.getElementById("resultBox"),
+      rCorrect:document.getElementById("rCorrect"),
+      rMiss:document.getElementById("rMiss"),
+      rAcc:document.getElementById("rAcc"),
+      rBest:document.getElementById("rBest")
+    };
+
+    let currentMode = "通し";
+    let deck = [];
+    let index = 0;
+    let currentWord = "";
+    let currentSeq = [];
+    let seqIndex = 0;
+    let started = false;
+    let correct = 0;
+    let miss = 0;
+    let streak = 0;
+    let totalKeystrokes = 0;
+    let autoNextTimer = null;
+
+    function shuffle(arr){
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--){
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function createModeButtons(){
+      els.modeGrid.innerHTML = "";
+      Object.keys(GROUPS).forEach(mode => {
+        const btn = document.createElement("button");
+        btn.className = "mode-btn" + (mode === currentMode ? " active" : "");
+        btn.textContent = mode;
+        btn.addEventListener("click", () => {
+          currentMode = mode;
+          createModeButtons();
+          resetForMode();
+        });
+        els.modeGrid.appendChild(btn);
+      });
+    }
+
+    function resetForMode(){
+      started = false;
+      correct = 0;
+      miss = 0;
+      streak = 0;
+      totalKeystrokes = 0;
+      deck = [];
+      index = 0;
+      currentWord = GROUPS[currentMode][0];
+      currentSeq = seqFor(toSequenceString(currentWord));
+      seqIndex = 0;
+      clearTimeout(autoNextTimer);
+      updateHeader();
+      els.groupBadge.textContent = `${currentMode}モード`;
+      els.statusBadge.textContent = "Enterでスタート";
+      els.questionKana.textContent = currentWord;
+      els.questionReading.textContent = "スタートすると もんだいがならぶよ";
+      els.message.textContent = "";
+      els.message.className = "message";
+      els.resultBox.classList.remove("show");
+      renderSequence();
+      renderNextList();
+      renderKeyboardHighlights();
+      renderBestList();
+    }
+
+    function startGame(){
+      deck = shuffle(GROUPS[currentMode]);
+      index = 0;
+      correct = 0;
+      miss = 0;
+      streak = 0;
+      totalKeystrokes = 0;
+      started = true;
+      els.resultBox.classList.remove("show");
+      loadQuestion();
+      playStartJingle();
+      burstStars();
+    }
+
+    function loadQuestion(){
+      if (index >= deck.length){
+        finishGame();
+        return;
+      }
+      currentWord = deck[index];
+      currentSeq = seqFor(toSequenceString(currentWord));
+      seqIndex = 0;
+      clearWrongHighlights();
+      els.questionKana.textContent = currentWord;
+      els.questionReading.textContent = `${currentWord} を かなキーで いれてみよう`;
+      els.message.textContent = "";
+      els.message.className = "message";
+      els.statusBadge.textContent = "れんしゅう中";
+      els.progressBadge.textContent = `${index + 1} / ${deck.length}`;
+      renderSequence();
+      renderNextList();
+      renderKeyboardHighlights();
+      updateHeader();
+    }
+
+    function goNext(){
+      if (!started) return;
+      index++;
+      loadQuestion();
+    }
+
+    function finishGame(){
+      started = false;
+      const acc = totalKeystrokes === 0 ? 0 : Math.round((correct / (correct + miss)) * 100);
+      const key = `kanaBest_${currentMode}`;
+      const best = Math.max(acc, Number(localStorage.getItem(key) || 0));
+      localStorage.setItem(key, best);
+
+      els.statusBadge.textContent = "おわり";
+      els.questionReading.textContent = "おつかれさま";
+      els.message.textContent = "クリア！";
+      els.message.className = "message ok";
+      els.rCorrect.textContent = correct;
+      els.rMiss.textContent = miss;
+      els.rAcc.textContent = acc + "%";
+      els.rBest.textContent = best + "%";
+      els.resultBox.classList.add("show");
+      renderBestList();
+      burstStars(24, true);
+    }
+
+    function updateHeader(){
+      els.modeName.textContent = currentMode;
+      els.correctCount.textContent = correct;
+      els.missCount.textContent = miss;
+      els.streakCount.textContent = streak;
+      els.progressBadge.textContent = started ? `${index + 1} / ${deck.length}` : `0 / ${GROUPS[currentMode].length}`;
+    }
+
+    function renderSequence(){
+      els.sequenceView.innerHTML = "";
+      currentSeq.forEach((step, i) => {
+        const d = document.createElement("div");
+        d.className = "seq-key";
+        if (i < seqIndex) d.classList.add("done");
+        if (i === seqIndex && started) d.classList.add("current");
+        d.innerHTML = `<div>${step.shift ? "Shift+" : ""}${prettyCode(step.code)}</div><small>${step.label.split(" / ")[1] || step.label}</small>`;
+        els.sequenceView.appendChild(d);
+      });
+    }
+
+    function renderNextList(){
+      const list = started ? deck.slice(index + 1, index + 9) : GROUPS[currentMode].slice(0, 8);
+      els.nextList.innerHTML = "";
+      list.forEach(item => {
+        const chip = document.createElement("div");
+        chip.className = "chip";
+        chip.textContent = item;
+        els.nextList.appendChild(chip);
+      });
+      if (list.length === 0){
+        els.nextList.innerHTML = `<div class="chip">さいご！</div>`;
+      }
+    }
+
+    function renderBestList(){
+      els.bestList.innerHTML = "";
+      Object.keys(GROUPS).forEach(mode => {
+        const v = Number(localStorage.getItem(`kanaBest_${mode}`) || 0);
+        const row = document.createElement("div");
+        row.className = "chip";
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.gap = "12px";
+        row.innerHTML = `<span>${mode}</span><span>${v}%</span>`;
+        els.bestList.appendChild(row);
+      });
+    }
+
+    function prettyCode(code){
+      const map = {
+        Digit1:"1",Digit2:"2",Digit3:"3",Digit4:"4",Digit5:"5",Digit6:"6",Digit7:"7",Digit8:"8",Digit9:"9",Digit0:"0",
+        Minus:"-",Equal:"^",
+        KeyQ:"Q",KeyW:"W",KeyE:"E",KeyR:"R",KeyT:"T",KeyY:"Y",KeyU:"U",KeyI:"I",KeyO:"O",KeyP:"P",
+        BracketLeft:"@",BracketRight:"[",
+        KeyA:"A",KeyS:"S",KeyD:"D",KeyF:"F",KeyG:"G",KeyH:"H",KeyJ:"J",KeyK:"K",KeyL:"L",
+        Semicolon:";",Quote:":",Backslash:"]",
+        KeyZ:"Z",KeyX:"X",KeyC:"C",KeyV:"V",KeyB:"B",KeyN:"N",KeyM:"M",
+        Comma:",",Period:".",Slash:"/",IntlRo:"\\",IntlYen:"¥",
+        ShiftLeft:"Shift",ShiftRight:"Shift",Space:"Space"
+      };
+      return map[code] || code;
+    }
+
+    function clearHighlights(){
+      document.querySelectorAll(".key").forEach(k => {
+        k.classList.remove("target","hit","wrong");
+      });
+    }
+
+    function clearWrongHighlights(){
+      document.querySelectorAll(".key.wrong").forEach(k => k.classList.remove("wrong"));
+    }
+
+    function renderKeyboardHighlights(){
+      clearHighlights();
+      if (!started || !currentSeq[seqIndex]) return;
+
+      const step = currentSeq[seqIndex];
+      const code = step.code;
+      document.querySelectorAll(`.key[data-code="${code}"]`).forEach(el => el.classList.add("target"));
+      if (step.shift) {
+        const shiftCode = isLeftSide(code) ? "ShiftLeft" : "ShiftRight";
+        document.querySelectorAll(`.key[data-code="${shiftCode}"]`).forEach(el => el.classList.add("target"));
+      }
+    }
+
+    function markHit(step){
+      document.querySelectorAll(`.key[data-code="${step.code}"]`).forEach(el => {
+        el.classList.remove("target");
+        el.classList.add("hit");
+      });
+      if (step.shift) {
+        const shiftCode = isLeftSide(step.code) ? "ShiftLeft" : "ShiftRight";
+        document.querySelectorAll(`.key[data-code="${shiftCode}"]`).forEach(el => {
+          el.classList.remove("target");
+          el.classList.add("hit");
+        });
+      }
+    }
+
+    function markWrong(code){
+      document.querySelectorAll(`.key[data-code="${code}"]`).forEach(el => el.classList.add("wrong"));
+      setTimeout(() => {
+        document.querySelectorAll(".key.wrong").forEach(el => el.classList.remove("wrong"));
+      }, 180);
+    }
+
+    function isLeftSide(code){
+      return [
+        "Digit6","Digit7","Digit8","Digit9","Digit0","Minus","Equal",
+        "KeyY","KeyU","KeyI","KeyO","KeyP","BracketLeft","BracketRight",
+        "KeyH","KeyJ","KeyK","KeyL","Semicolon","Quote","Backslash",
+        "KeyN","KeyM","Comma","Period","Slash","IntlRo","IntlYen"
+      ].includes(code);
+    }
+
+    // ====== 音 ======
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function tone(freq, duration, type="sine", volume=.03){
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration + 0.03);
+    }
+
+    function noise(duration=.08, volume=.018){
+      const bufferSize = audioCtx.sampleRate * duration;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * 0.35;
+      const source = audioCtx.createBufferSource();
+      const filter = audioCtx.createBiquadFilter();
+      const gain = audioCtx.createGain();
+      filter.type = "highpass";
+      filter.frequency.value = 1200;
+      source.buffer = buffer;
+      source.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+      gain.gain.value = volume;
+      source.start();
+      source.stop(audioCtx.currentTime + duration);
+    }
+
+    function playKeySound(){
+      noise(.035,.012);
+      tone(860,.035,"triangle",.018);
+    }
+    function playGoodSound(){
+      tone(660,.07,"triangle",.03);
+      setTimeout(()=>tone(990,.1,"triangle",.03),50);
+    }
+    function playBadSound(){
+      tone(190,.07,"sawtooth",.028);
+    }
+    function playStartJingle(){
+      tone(440,.06,"triangle",.024);
+      setTimeout(()=>tone(660,.06,"triangle",.024),70);
+      setTimeout(()=>tone(880,.09,"triangle",.028),140);
+    }
+
+    // ====== きらきら演出 ======
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+
+    function resizeCanvas(){
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * devicePixelRatio;
+      canvas.height = rect.height * devicePixelRatio;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+      ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    }
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    function burstStars(count=12, big=false){
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height * 0.34;
+      for(let i=0;i<count;i++){
+        particles.push({
+          x:cx,
+          y:cy,
+          vx:(Math.random()-0.5)*(big?7:4),
+          vy:(Math.random()-0.7)*(big?7:4)-1,
+          life:big?75:45,
+          age:0,
+          size:Math.random()*(big?7:4)+(big?4:2),
+          hue:[35,50,120,200,270,320][Math.floor(Math.random()*6)]
+        });
+      }
+    }
+
+    function loop(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles = particles.filter(p => p.age < p.life);
+      particles.forEach(p => {
+        p.age++;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.07;
+        const alpha = 1 - p.age / p.life;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.age * 0.2);
+        ctx.fillStyle = `hsl(${p.hue} 95% 65%)`;
+        drawStar(ctx, 0, 0, 5, p.size, p.size * 0.45);
+        ctx.restore();
+      });
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    function drawStar(ctx, cx, cy, spikes, outerRadius, innerRadius){
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      const step = Math.PI / spikes;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++){
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // ====== 入力判定 ======
+    window.addEventListener("keydown", async (e) => {
+      if (audioCtx.state === "suspended") {
+        try { await audioCtx.resume(); } catch {}
+      }
+
+      if (e.code === "Enter") {
+        e.preventDefault();
+        if (!started) startGame();
+        return;
+      }
+
+      if (!started) return;
+
+      const step = currentSeq[seqIndex];
+      if (!step) return;
+
+      const needShift = !!step.shift;
+      const shiftOK = needShift ? e.shiftKey : !e.shiftKey || e.code.startsWith("Shift");
+      const codeOK = e.code === step.code;
+
+      // Shiftそのものを押している途中は無視
+      if (e.code === "ShiftLeft" || e.code === "ShiftRight") return;
+
+      totalKeystrokes++;
+
+      if (codeOK && shiftOK){
+        e.preventDefault();
+        playKeySound();
+        markHit(step);
+        seqIndex++;
+        renderSequence();
+
+        if (seqIndex >= currentSeq.length){
+          correct++;
+          streak++;
+          updateHeader();
+          els.message.textContent = "せいかい！";
+          els.message.className = "message ok";
+          playGoodSound();
+          burstStars(8 + Math.min(streak, 10));
+          autoNextTimer = setTimeout(goNext, 520);
+        } else {
+          els.message.textContent = "";
+          els.message.className = "message";
+          renderKeyboardHighlights();
+        }
+      } else {
+        miss++;
+        streak = 0;
+        updateHeader();
+        els.message.textContent = "ちがうキー";
+        els.message.className = "message ng";
+        playBadSound();
+        markWrong(e.code);
+      }
+    });
+
+    // ====== ボタン ======
+    els.startBtn.addEventListener("click", startGame);
+    els.nextBtn.addEventListener("click", () => {
+      if (!started) startGame();
+      else goNext();
+    });
+
+    // ====== 初期化 ======
+    createModeButtons();
+    resetForMode();
+  </script>
+</body>
+</html>
