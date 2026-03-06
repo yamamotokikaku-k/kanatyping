@@ -1,585 +1,1390 @@
-const rows = {
-  a: [
-    { kana: "あ", romaji: "a" }, { kana: "い", romaji: "i" }, { kana: "う", romaji: "u" },
-    { kana: "え", romaji: "e" }, { kana: "お", romaji: "o" }
-  ],
-  ka: [
-    { kana: "か", romaji: "ka" }, { kana: "き", romaji: "ki" }, { kana: "く", romaji: "ku" },
-    { kana: "け", romaji: "ke" }, { kana: "こ", romaji: "ko" }
-  ],
-  sa: [
-    { kana: "さ", romaji: "sa" }, { kana: "し", romaji: "shi" }, { kana: "す", romaji: "su" },
-    { kana: "せ", romaji: "se" }, { kana: "そ", romaji: "so" }
-  ],
-  ta: [
-    { kana: "た", romaji: "ta" }, { kana: "ち", romaji: "chi" }, { kana: "つ", romaji: "tsu" },
-    { kana: "て", romaji: "te" }, { kana: "と", romaji: "to" }
-  ],
-  na: [
-    { kana: "な", romaji: "na" }, { kana: "に", romaji: "ni" }, { kana: "ぬ", romaji: "nu" },
-    { kana: "ね", romaji: "ne" }, { kana: "の", romaji: "no" }
-  ],
-  ha: [
-    { kana: "は", romaji: "ha" }, { kana: "ひ", romaji: "hi" }, { kana: "ふ", romaji: "fu" },
-    { kana: "へ", romaji: "he" }, { kana: "ほ", romaji: "ho" }
-  ],
-  ma: [
-    { kana: "ま", romaji: "ma" }, { kana: "み", romaji: "mi" }, { kana: "む", romaji: "mu" },
-    { kana: "め", romaji: "me" }, { kana: "も", romaji: "mo" }
-  ],
-  ya: [
-    { kana: "や", romaji: "ya" }, { kana: "ゆ", romaji: "yu" }, { kana: "よ", romaji: "yo" }
-  ],
-  ra: [
-    { kana: "ら", romaji: "ra" }, { kana: "り", romaji: "ri" }, { kana: "る", romaji: "ru" },
-    { kana: "れ", romaji: "re" }, { kana: "ろ", romaji: "ro" }
-  ],
-  wa: [
-    { kana: "わ", romaji: "wa" }, { kana: "を", romaji: "wo" }, { kana: "ん", romaji: "n" }
-  ],
-  dakuon: [
-    { kana: "が", romaji: "ga" }, { kana: "ぎ", romaji: "gi" }, { kana: "ぐ", romaji: "gu" }, { kana: "げ", romaji: "ge" }, { kana: "ご", romaji: "go" },
-    { kana: "ざ", romaji: "za" }, { kana: "じ", romaji: "ji" }, { kana: "ず", romaji: "zu" }, { kana: "ぜ", romaji: "ze" }, { kana: "ぞ", romaji: "zo" },
-    { kana: "だ", romaji: "da" }, { kana: "ぢ", romaji: "ji" }, { kana: "づ", romaji: "zu" }, { kana: "で", romaji: "de" }, { kana: "ど", romaji: "do" },
-    { kana: "ば", romaji: "ba" }, { kana: "び", romaji: "bi" }, { kana: "ぶ", romaji: "bu" }, { kana: "べ", romaji: "be" }, { kana: "ぼ", romaji: "bo" }
-  ],
-  handakuon: [
-    { kana: "ぱ", romaji: "pa" }, { kana: "ぴ", romaji: "pi" }, { kana: "ぷ", romaji: "pu" }, { kana: "ぺ", romaji: "pe" }, { kana: "ぽ", romaji: "po" }
-  ],
-  youon: [
-    { kana: "きゃ", romaji: "kya" }, { kana: "きゅ", romaji: "kyu" }, { kana: "きょ", romaji: "kyo" },
-    { kana: "しゃ", romaji: "sha" }, { kana: "しゅ", romaji: "shu" }, { kana: "しょ", romaji: "sho" },
-    { kana: "ちゃ", romaji: "cha" }, { kana: "ちゅ", romaji: "chu" }, { kana: "ちょ", romaji: "cho" },
-    { kana: "にゃ", romaji: "nya" }, { kana: "にゅ", romaji: "nyu" }, { kana: "にょ", romaji: "nyo" },
-    { kana: "ひゃ", romaji: "hya" }, { kana: "ひゅ", romaji: "hyu" }, { kana: "ひょ", romaji: "hyo" },
-    { kana: "みゃ", romaji: "mya" }, { kana: "みゅ", romaji: "myu" }, { kana: "みょ", romaji: "myo" },
-    { kana: "りゃ", romaji: "rya" }, { kana: "りゅ", romaji: "ryu" }, { kana: "りょ", romaji: "ryo" },
-    { kana: "ぎゃ", romaji: "gya" }, { kana: "ぎゅ", romaji: "gyu" }, { kana: "ぎょ", romaji: "gyo" },
-    { kana: "じゃ", romaji: "ja" }, { kana: "じゅ", romaji: "ju" }, { kana: "じょ", romaji: "jo" },
-    { kana: "びゃ", romaji: "bya" }, { kana: "びゅ", romaji: "byu" }, { kana: "びょ", romaji: "byo" },
-    { kana: "ぴゃ", romaji: "pya" }, { kana: "ぴゅ", romaji: "pyu" }, { kana: "ぴょ", romaji: "pyo" }
-  ]
-};
-
-const rowLabels = {
-  a: "あぎょう",
-  ka: "かぎょう",
-  sa: "さぎょう",
-  ta: "たぎょう",
-  na: "なぎょう",
-  ha: "はぎょう",
-  ma: "まぎょう",
-  ya: "やぎょう",
-  ra: "らぎょう",
-  wa: "わぎょう",
-  dakuon: "だくおん",
-  handakuon: "はんだくおん",
-  youon: "ようおん"
-};
-
-const baseSequenceOrder = ["a", "ka", "sa", "ta", "na", "ha", "ma", "ya", "ra", "wa"];
-
-const fingerMap = {
-  "1": ["finger-lp", "ひだり こゆび"],
-  "2": ["finger-lr", "ひだり くすりゆび"],
-  "3": ["finger-lm", "ひだり なかゆび"],
-  "4": ["finger-li", "ひだり ひとさしゆび"],
-  "5": ["finger-li", "ひだり ひとさしゆび"],
-  "6": ["finger-ri", "みぎ ひとさしゆび"],
-  "7": ["finger-ri", "みぎ ひとさしゆび"],
-  "8": ["finger-rm", "みぎ なかゆび"],
-  "9": ["finger-rr", "みぎ くすりゆび"],
-  "0": ["finger-rp", "みぎ こゆび"],
-  "-": ["finger-rp", "みぎ こゆび"],
-  "=": ["finger-rp", "みぎ こゆび"],
-
-  "q": ["finger-lp", "ひだり こゆび"],
-  "w": ["finger-lr", "ひだり くすりゆび"],
-  "e": ["finger-lm", "ひだり なかゆび"],
-  "r": ["finger-li", "ひだり ひとさしゆび"],
-  "t": ["finger-li", "ひだり ひとさしゆび"],
-  "y": ["finger-ri", "みぎ ひとさしゆび"],
-  "u": ["finger-ri", "みぎ ひとさしゆび"],
-  "i": ["finger-rm", "みぎ なかゆび"],
-  "o": ["finger-rr", "みぎ くすりゆび"],
-  "p": ["finger-rp", "みぎ こゆび"],
-
-  "a": ["finger-lp", "ひだり こゆび"],
-  "s": ["finger-lr", "ひだり くすりゆび"],
-  "d": ["finger-lm", "ひだり なかゆび"],
-  "f": ["finger-li", "ひだり ひとさしゆび"],
-  "g": ["finger-li", "ひだり ひとさしゆび"],
-  "h": ["finger-ri", "みぎ ひとさしゆび"],
-  "j": ["finger-ri", "みぎ ひとさしゆび"],
-  "k": ["finger-rm", "みぎ なかゆび"],
-  "l": ["finger-rr", "みぎ くすりゆび"],
-  ";": ["finger-rp", "みぎ こゆび"],
-
-  "z": ["finger-lp", "ひだり こゆび"],
-  "x": ["finger-lr", "ひだり くすりゆび"],
-  "c": ["finger-lm", "ひだり なかゆび"],
-  "v": ["finger-li", "ひだり ひとさしゆび"],
-  "b": ["finger-li", "ひだり ひとさしゆび"],
-  "n": ["finger-ri", "みぎ ひとさしゆび"],
-  "m": ["finger-ri", "みぎ ひとさしゆび"],
-  ",": ["finger-rm", "みぎ なかゆび"],
-  ".": ["finger-rr", "みぎ くすりゆび"],
-  "/": ["finger-rp", "みぎ こゆび"],
-  " ": ["finger-th", "おやゆび"]
-};
-
-const keyboardLayout = [
-  [
-    { label: "1", code: "1", finger: "finger-lp" },
-    { label: "2", code: "2", finger: "finger-lr" },
-    { label: "3", code: "3", finger: "finger-lm" },
-    { label: "4", code: "4", finger: "finger-li" },
-    { label: "5", code: "5", finger: "finger-li" },
-    { label: "6", code: "6", finger: "finger-ri" },
-    { label: "7", code: "7", finger: "finger-ri" },
-    { label: "8", code: "8", finger: "finger-rm" },
-    { label: "9", code: "9", finger: "finger-rr" },
-    { label: "0", code: "0", finger: "finger-rp" },
-    { label: "-", code: "-", finger: "finger-rp" },
-    { label: "=", code: "=", finger: "finger-rp" }
-  ],
-  [
-    { label: "Q", code: "q", finger: "finger-lp" },
-    { label: "W", code: "w", finger: "finger-lr" },
-    { label: "E", code: "e", finger: "finger-lm" },
-    { label: "R", code: "r", finger: "finger-li" },
-    { label: "T", code: "t", finger: "finger-li" },
-    { label: "Y", code: "y", finger: "finger-ri" },
-    { label: "U", code: "u", finger: "finger-ri" },
-    { label: "I", code: "i", finger: "finger-rm" },
-    { label: "O", code: "o", finger: "finger-rr" },
-    { label: "P", code: "p", finger: "finger-rp" }
-  ],
-  [
-    { label: "A", code: "a", finger: "finger-lp", home: true },
-    { label: "S", code: "s", finger: "finger-lr", home: true },
-    { label: "D", code: "d", finger: "finger-lm", home: true },
-    { label: "F", code: "f", finger: "finger-li", home: true },
-    { label: "G", code: "g", finger: "finger-li" },
-    { label: "H", code: "h", finger: "finger-ri" },
-    { label: "J", code: "j", finger: "finger-ri", home: true },
-    { label: "K", code: "k", finger: "finger-rm", home: true },
-    { label: "L", code: "l", finger: "finger-rr", home: true },
-    { label: ";", code: ";", finger: "finger-rp", home: true }
-  ],
-  [
-    { label: "Z", code: "z", finger: "finger-lp" },
-    { label: "X", code: "x", finger: "finger-lr" },
-    { label: "C", code: "c", finger: "finger-lm" },
-    { label: "V", code: "v", finger: "finger-li" },
-    { label: "B", code: "b", finger: "finger-li" },
-    { label: "N", code: "n", finger: "finger-ri" },
-    { label: "M", code: "m", finger: "finger-ri" },
-    { label: ",", code: ",", finger: "finger-rm" },
-    { label: ".", code: ".", finger: "finger-rr" },
-    { label: "/", code: "/", finger: "finger-rp" }
-  ],
-  [
-    { label: "Space", code: " ", finger: "finger-th", width: "wide-625" }
-  ]
-];
-
-const el = {
-  modeSelect: document.getElementById("modeSelect"),
-  rowSelect: document.getElementById("rowSelect"),
-  questionCount: document.getElementById("questionCount"),
-  includeDakuon: document.getElementById("includeDakuon"),
-  includeYouon: document.getElementById("includeYouon"),
-  startBtn: document.getElementById("startBtn"),
-  nextBtn: document.getElementById("nextBtn"),
-  repeatBtn: document.getElementById("repeatBtn"),
-  soundToggle: document.getElementById("soundToggle"),
-  progressText: document.getElementById("progressText"),
-  scoreText: document.getElementById("scoreText"),
-  progressFill: document.getElementById("progressFill"),
-  kanaDisplay: document.getElementById("kanaDisplay"),
-  romajiDisplay: document.getElementById("romajiDisplay"),
-  typingInput: document.getElementById("typingInput"),
-  instructionText: document.getElementById("instructionText"),
-  feedbackArea: document.getElementById("feedbackArea"),
-  modeBadge: document.getElementById("modeBadge"),
-  fingerBadge: document.getElementById("fingerBadge"),
-  targetKeysView: document.getElementById("targetKeysView"),
-  currentKeyView: document.getElementById("currentKeyView"),
-  fingerGuide: document.getElementById("fingerGuide"),
-  remainingKeysView: document.getElementById("remainingKeysView"),
-  keyboard: document.getElementById("keyboard"),
-  sideKana: document.getElementById("sideKana"),
-  sideRomaji: document.getElementById("sideRomaji"),
-  sideKey: document.getElementById("sideKey"),
-  sideFinger: document.getElementById("sideFinger"),
-  starBoard: document.getElementById("starBoard")
-};
-
-const state = {
-  soundOn: true,
-  quiz: [],
-  currentIndex: 0,
-  correctCount: 0,
-  answered: false,
-  currentItem: { kana: "あ", romaji: "a" }
-};
-
-function shuffle(array) {
-  const clone = [...array];
-  for (let i = clone.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [clone[i], clone[j]] = [clone[j], clone[i]];
-  }
-  return clone;
-}
-
-function buildRowOptions() {
-  Object.entries(rowLabels).forEach(([key, label]) => {
-    const option = document.createElement("option");
-    option.value = key;
-    option.textContent = label;
-    el.rowSelect.appendChild(option);
-  });
-}
-
-function createKeyboard() {
-  keyboardLayout.forEach((row) => {
-    const rowEl = document.createElement("div");
-    rowEl.className = "keyboard-row";
-
-    row.forEach((key) => {
-      const btn = document.createElement("div");
-      btn.className = `key ${key.finger} ${key.width || ""}`.trim();
-      if (key.home) btn.classList.add("home");
-      btn.dataset.key = key.code;
-      btn.textContent = key.label;
-      rowEl.appendChild(btn);
-    });
-
-    el.keyboard.appendChild(rowEl);
-  });
-}
-
-function getPool() {
-  const mode = el.modeSelect.value;
-  const selectedRow = el.rowSelect.value;
-  const includeDakuon = el.includeDakuon.checked;
-  const includeYouon = el.includeYouon.checked;
-
-  let pool = [];
-
-  if (mode === "row") {
-    pool = [...rows[selectedRow]];
-  } else if (mode === "sequence") {
-    baseSequenceOrder.forEach((key) => {
-      pool.push(...rows[key]);
-    });
-    if (includeDakuon) {
-      pool.push(...rows.dakuon, ...rows.handakuon);
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>こどもローマ字タイピング</title>
+  <style>
+    :root{
+      --bg:#f7fbff;
+      --card:#ffffff;
+      --line:#d9e7f3;
+      --text:#19324a;
+      --sub:#5f7a92;
+      --accent:#4aa3ff;
+      --accent2:#7dd3fc;
+      --ok:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --key:#ffffff;
+      --key-shadow:#c9d9e6;
+      --finger-l:#a7f3d0;
+      --finger-r:#fde68a;
+      --finger-thumb:#fbcfe8;
+      --active:#60a5fa;
+      --active-strong:#2563eb;
+      --next:#93c5fd;
+      --wrong:#fca5a5;
     }
-    if (includeYouon) {
-      pool.push(...rows.youon);
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:
+        "Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",
+        system-ui,-apple-system,sans-serif;
+      background:linear-gradient(180deg,#eef8ff 0%, #f8fcff 100%);
+      color:var(--text);
     }
-  } else {
-    baseSequenceOrder.forEach((key) => {
-      pool.push(...rows[key]);
-    });
-    if (includeDakuon) {
-      pool.push(...rows.dakuon, ...rows.handakuon);
+
+    .app{
+      max-width:1400px;
+      margin:0 auto;
+      padding:16px;
     }
-    if (includeYouon) {
-      pool.push(...rows.youon);
+
+    .header{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
     }
-    pool = shuffle(pool);
-  }
 
-  if (mode === "row") {
-    if (selectedRow !== "dakuon" && selectedRow !== "handakuon" && includeDakuon) {
-      // 行ごとでは追加しない
+    .title-wrap h1{
+      margin:0;
+      font-size:clamp(28px,4vw,42px);
+      line-height:1.1;
+      letter-spacing:.03em;
     }
-    if (selectedRow !== "youon" && includeYouon) {
-      // 行ごとでは追加しない
+
+    .title-wrap p{
+      margin:6px 0 0;
+      color:var(--sub);
+      font-size:14px;
     }
-  }
 
-  return pool;
-}
+    .mascot{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:var(--card);
+      border:2px solid var(--line);
+      border-radius:18px;
+      padding:10px 14px;
+      box-shadow:0 8px 24px rgba(50,100,160,.08);
+    }
 
-function buildQuiz() {
-  const count = Number(el.questionCount.value);
-  const mode = el.modeSelect.value;
-  const pool = getPool();
+    .mascot-face{
+      width:48px;height:48px;border-radius:50%;
+      display:grid;place-items:center;
+      font-size:28px;
+      background:linear-gradient(135deg,#fff7cc,#ffe9a8);
+      border:2px solid #f1d98d;
+    }
 
-  if (mode === "sequence") {
-    return pool.slice(0, count);
-  }
+    .layout{
+      display:grid;
+      grid-template-columns:380px 1fr;
+      gap:16px;
+    }
 
-  if (pool.length <= count) {
-    return shuffle(pool).slice(0, count);
-  }
+    @media (max-width:1100px){
+      .layout{grid-template-columns:1fr}
+    }
 
-  return shuffle(pool).slice(0, count);
-}
+    .panel{
+      background:var(--card);
+      border:2px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 10px 30px rgba(48,88,130,.08);
+      overflow:hidden;
+    }
 
-function normalizeInput(text) {
-  return text.trim().toLowerCase();
-}
+    .panel-head{
+      padding:14px 18px;
+      border-bottom:2px solid #edf5fb;
+      background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);
+      font-weight:700;
+      font-size:18px;
+    }
 
-function clearKeyboardHighlights() {
-  document.querySelectorAll(".key.active").forEach((key) => key.classList.remove("active"));
-}
+    .panel-body{padding:16px}
 
-function pressKeyVisual(key) {
-  const target = document.querySelector(`.key[data-key="${CSS.escape(key)}"]`);
-  if (!target) return;
-  target.classList.add("pressed");
-  setTimeout(() => target.classList.remove("pressed"), 120);
-}
+    .controls{
+      display:grid;
+      gap:14px;
+    }
 
-function highlightRomajiProgress(romaji, typed) {
-  const ok = romaji.slice(0, typed.length);
-  const rest = romaji.slice(typed.length);
-  el.romajiDisplay.innerHTML = `<span style="color:#35b56a">${ok}</span><span>${rest}</span>`;
-}
+    .group{
+      border:2px dashed #deebf6;
+      border-radius:18px;
+      padding:12px;
+      background:#fbfeff;
+    }
 
-function updateGuide(item, typed = "") {
-  const romaji = item.romaji;
-  const currentChar = romaji[typed.length] || romaji[romaji.length - 1];
-  const remaining = romaji.slice(typed.length + 1) || "-";
-  const fingerInfo = fingerMap[currentChar] || ["finger-th", "おやゆび"];
+    .group h3{
+      margin:0 0 10px;
+      font-size:15px;
+    }
 
-  clearKeyboardHighlights();
+    .btn-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    }
 
-  if (currentChar) {
-    const target = document.querySelector(`.key[data-key="${CSS.escape(currentChar)}"]`);
-    if (target) target.classList.add("active");
-  }
+    .btn-grid.cols-3{
+      grid-template-columns:repeat(3,minmax(0,1fr));
+    }
 
-  el.targetKeysView.textContent = romaji.toUpperCase();
-  el.currentKeyView.textContent = currentChar ? currentChar.toUpperCase() : "-";
-  el.remainingKeysView.textContent = remaining ? remaining.toUpperCase() : "-";
-  el.fingerGuide.textContent = fingerInfo[1];
-  el.fingerBadge.textContent = fingerInfo[1];
-  el.sideKana.textContent = item.kana;
-  el.sideRomaji.textContent = item.romaji;
-  el.sideKey.textContent = currentChar ? currentChar.toUpperCase() : "-";
-  el.sideFinger.textContent = fingerInfo[1];
-}
+    button{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      font:inherit;
+      border-radius:14px;
+      padding:11px 12px;
+      background:#fff;
+      color:var(--text);
+      border:2px solid var(--line);
+      transition:.15s ease;
+      box-shadow:0 2px 0 #dfeaf3;
+    }
 
-function updateQuestionView() {
-  const item = state.currentItem;
-  el.kanaDisplay.textContent = item.kana;
-  el.romajiDisplay.textContent = item.romaji;
-  el.typingInput.value = "";
-  el.feedbackArea.textContent = "";
-  el.feedbackArea.className = "feedback";
-  el.instructionText.textContent = "ローマ字で うってみよう";
-  updateGuide(item, "");
-  el.typingInput.focus();
-}
+    button:hover{transform:translateY(-1px)}
+    button:active{transform:translateY(1px); box-shadow:none}
+    button.selected{
+      background:linear-gradient(180deg,#eff7ff,#dcedff);
+      border-color:#8ec5ff;
+      box-shadow:0 2px 0 #9cc7ef;
+      font-weight:700;
+    }
+    button.primary{
+      background:linear-gradient(180deg,#6bb6ff,#4295f5);
+      color:#fff;
+      border-color:#3d90ee;
+      box-shadow:0 3px 0 #2f77c7;
+      font-weight:700;
+    }
+    button.secondary{
+      background:linear-gradient(180deg,#fff8d9,#ffefab);
+      border-color:#f4d978;
+      box-shadow:0 3px 0 #dabb54;
+      font-weight:700;
+    }
+    button.ghost{
+      background:#f8fcff;
+    }
 
-function updateStatus() {
-  const total = state.quiz.length;
-  const current = Math.min(state.currentIndex, total);
-  el.progressText.textContent = `${current} / ${total}`;
-  el.scoreText.textContent = `せいかい ${state.correctCount}`;
-  el.progressFill.style.width = total ? `${(current / total) * 100}%` : "0%";
+    .status-cards{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+    }
 
-  const stars = el.starBoard.querySelectorAll(".star");
-  const lit = Math.min(stars.length, state.correctCount);
-  stars.forEach((star, index) => {
-    star.classList.toggle("on", index < lit);
-    star.classList.toggle("off", index >= lit);
-  });
-}
+    .card-mini{
+      border:2px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      background:#fff;
+      text-align:center;
+    }
 
-function currentModeLabel() {
-  if (el.modeSelect.value === "row") return rowLabels[el.rowSelect.value];
-  if (el.modeSelect.value === "sequence") return "あからじゅんばん";
-  return "ランダム";
-}
+    .card-mini .label{
+      font-size:12px;
+      color:var(--sub);
+      margin-bottom:4px;
+    }
 
-function setModeBadge() {
-  el.modeBadge.textContent = currentModeLabel();
-}
+    .card-mini .value{
+      font-size:22px;
+      font-weight:800;
+    }
 
-function speak(text) {
-  if (!state.soundOn || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = "ja-JP";
-  utter.rate = 0.9;
-  utter.pitch = 1.2;
-  window.speechSynthesis.speak(utter);
-}
+    .main-area{
+      display:grid;
+      gap:16px;
+    }
 
-function beep(type = "ok") {
-  if (!state.soundOn) return;
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContextClass) return;
+    .question-wrap{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+    }
 
-  const ctx = new AudioContextClass();
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
+    @media (max-width:1100px){
+      .question-wrap{grid-template-columns:1fr}
+    }
 
-  osc.type = "sine";
-  osc.frequency.value = type === "ok" ? 660 : 220;
-  gain.gain.value = 0.0001;
+    .big-card{
+      background:var(--card);
+      border:2px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 10px 30px rgba(48,88,130,.08);
+      padding:18px;
+    }
 
-  osc.connect(gain);
-  gain.connect(ctx.destination);
+    .question-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
 
-  osc.start();
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#f1f8ff;
+      border:2px solid #d7eaff;
+      color:#295986;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      font-weight:700;
+    }
 
-  gain.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.01);
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (type === "ok" ? 0.18 : 0.24));
-  osc.stop(ctx.currentTime + (type === "ok" ? 0.2 : 0.26));
+    .kana-display{
+      text-align:center;
+      padding:18px 10px 8px;
+    }
 
-  setTimeout(() => ctx.close(), 400);
-}
+    .kana-main{
+      font-size:clamp(72px,12vw,140px);
+      line-height:1;
+      font-weight:900;
+      letter-spacing:.06em;
+      margin:0 0 10px;
+    }
 
-function sparkle() {
-  const marks = ["✨", "🌈", "⭐", "🎉"];
-  const rect = el.kanaDisplay.getBoundingClientRect();
+    .romaji-answer{
+      font-size:clamp(22px,4vw,36px);
+      font-weight:800;
+      color:#3b6fa4;
+      letter-spacing:.08em;
+      min-height:1.5em;
+    }
 
-  for (let i = 0; i < 5; i += 1) {
-    const s = document.createElement("div");
-    s.className = "sparkle";
-    s.textContent = marks[Math.floor(Math.random() * marks.length)];
-    s.style.left = `${rect.left + rect.width / 2 + (Math.random() * 80 - 40)}px`;
-    s.style.top = `${rect.top + rect.height / 2 + (Math.random() * 40 - 20)}px`;
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 700);
-  }
-}
+    .hint-line{
+      margin-top:12px;
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:8px;
+    }
 
-function showCorrect() {
-  state.answered = true;
-  state.correctCount += 1;
-  el.feedbackArea.textContent = "せいかい！";
-  el.feedbackArea.className = "feedback ok";
-  el.instructionText.textContent = "よくできたね";
-  el.nextBtn.disabled = false;
-  beep("ok");
-  sparkle();
-  speak(state.currentItem.kana);
-  updateStatus();
-}
+    .romaji-pill{
+      min-width:44px;
+      padding:10px 14px;
+      border-radius:999px;
+      border:2px solid #d5e9ff;
+      background:#f7fbff;
+      font-weight:800;
+      font-size:24px;
+    }
+    .romaji-pill.done{
+      background:#dcfce7;
+      border-color:#8de1ad;
+      color:#17643a;
+    }
+    .romaji-pill.next{
+      background:#dbeafe;
+      border-color:#93c5fd;
+      color:#1d4ed8;
+      transform:scale(1.08);
+    }
 
-function showMiss() {
-  el.feedbackArea.textContent = "あと もうすこし";
-  el.feedbackArea.className = "feedback ng";
-  el.instructionText.textContent = "ひかるキーを みてみよう";
-  beep("ng");
-}
+    .message-box{
+      margin-top:14px;
+      text-align:center;
+      font-size:18px;
+      font-weight:800;
+      min-height:1.5em;
+    }
 
-function setQuestion(index) {
-  if (index >= state.quiz.length) {
-    finishQuiz();
-    return;
-  }
+    .message-box.ok{color:#15803d}
+    .message-box.ng{color:#dc2626}
+    .message-box.info{color:#1d4ed8}
 
-  state.currentIndex = index;
-  state.currentItem = state.quiz[index];
-  state.answered = false;
-  el.nextBtn.disabled = true;
-  el.repeatBtn.disabled = false;
-  updateQuestionView();
-  updateStatus();
-  setModeBadge();
-  speak(state.currentItem.kana);
-}
+    .progress-box{
+      margin-top:18px;
+    }
 
-function finishQuiz() {
-  clearKeyboardHighlights();
-  el.kanaDisplay.textContent = "おわり";
-  el.romajiDisplay.textContent = "great!";
-  el.instructionText.textContent = "もういちど あそべるよ";
-  el.feedbackArea.textContent = `せいかい ${state.correctCount} / ${state.quiz.length}`;
-  el.feedbackArea.className = "feedback ok";
-  el.typingInput.value = "";
-  el.nextBtn.disabled = true;
-  el.currentKeyView.textContent = "-";
-  el.remainingKeysView.textContent = "-";
-  el.targetKeysView.textContent = "-";
-  el.fingerGuide.textContent = "おつかれさま";
-  el.sideKey.textContent = "-";
-  el.sideFinger.textContent = "おつかれさま";
-  updateStatus();
-  speak("おわり");
-}
+    .progress-label{
+      display:flex;
+      justify-content:space-between;
+      font-size:13px;
+      color:var(--sub);
+      margin-bottom:6px;
+    }
 
-function startQuiz() {
-  state.quiz = buildQuiz();
-  state.correctCount = 0;
-  setQuestion(0);
-}
+    .bar{
+      height:18px;
+      border-radius:999px;
+      background:#edf5fb;
+      border:2px solid #ddebf6;
+      overflow:hidden;
+    }
 
-function handleTyping() {
-  if (!state.currentItem || state.answered) return;
+    .bar > span{
+      display:block;
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,#60a5fa,#7dd3fc);
+      transition:width .2s ease;
+    }
 
-  const value = normalizeInput(el.typingInput.value);
-  const romaji = state.currentItem.romaji;
+    .coach{
+      display:grid;
+      gap:10px;
+    }
 
-  highlightRomajiProgress(romaji, value);
-  updateGuide(state.currentItem, value);
+    .coach-bubble{
+      background:linear-gradient(180deg,#fffef4,#fff7d6);
+      border:2px solid #f2df8a;
+      border-radius:20px;
+      padding:14px;
+      font-weight:700;
+      min-height:92px;
+    }
 
-  const lastTyped = value[value.length - 1];
-  if (lastTyped) pressKeyVisual(lastTyped);
+    .legend{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+    }
 
-  if (!romaji.startsWith(value)) {
-    showMiss();
-    return;
-  }
+    .legend-item{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-size:12px;
+      color:var(--sub);
+      background:#fff;
+      border:2px solid var(--line);
+      border-radius:14px;
+      padding:8px;
+    }
 
-  el.feedbackArea.textContent = "";
-  el.feedbackArea.className = "feedback";
+    .dot{
+      width:16px;height:16px;border-radius:50%;
+      border:2px solid rgba(0,0,0,.08);
+      flex:0 0 auto;
+    }
 
-  if (value === romaji) {
-    showCorrect();
-  }
-}
+    .keyboard-card{
+      background:var(--card);
+      border:2px solid var(--line);
+      border-radius:24px;
+      box-shadow:0 10px 30px rgba(48,88,130,.08);
+      padding:18px;
+      overflow:auto;
+    }
 
-function populateRowVisibility() {
-  const isRow = el.modeSelect.value === "row";
-  el.rowSelect.disabled = !isRow;
-}
+    .keyboard-wrap{
+      min-width:980px;
+    }
 
-el.startBtn.addEventListener("click", startQuiz);
+    .keyboard{
+      display:grid;
+      gap:10px;
+    }
 
-el.nextBtn.addEventListener("click", () => {
-  if (!state.answered) return;
-  setQuestion(state.currentIndex + 1);
-});
+    .row{
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+    }
 
-el.repeatBtn.addEventListener("click", () => {
-  updateQuestionView();
-});
+    .key{
+      position:relative;
+      width:56px;
+      height:56px;
+      background:var(--key);
+      border:2px solid #cfdeea;
+      border-radius:14px;
+      box-shadow:0 4px 0 var(--key-shadow);
+      padding:6px 6px 4px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      align-items:center;
+      user-select:none;
+      transition:.12s ease;
+    }
 
-el.typingInput.addEventListener("input", handleTyping);
+    .key .jp{
+      font-size:11px;
+      color:#6c88a1;
+      line-height:1;
+      min-height:1em;
+    }
 
-el.modeSelect.addEventListener("change", () => {
-  populateRowVisibility();
-  setModeBadge();
-});
+    .key .en{
+      font-size:22px;
+      font-weight:900;
+      line-height:1;
+      text-transform:uppercase;
+    }
 
-el.rowSelect.addEventListener("change", setModeBadge);
+    .key.small .en{font-size:18px}
+    .key.wide{width:86px}
+    .key.wider{width:108px}
+    .key.space{width:360px}
+    .key.active{
+      background:linear-gradient(180deg,#e0efff,#b8d9ff);
+      border-color:#5fa4ff;
+      box-shadow:0 4px 0 #7daee1;
+      transform:translateY(-2px);
+    }
+    .key.next{
+      outline:4px solid #93c5fd;
+      outline-offset:2px;
+    }
+    .key.wrong{
+      background:linear-gradient(180deg,#ffe4e6,#fecdd3);
+      border-color:#ef4444;
+    }
 
-el.soundToggle.addEventListener("click", () => {
-  state.soundOn = !state.soundOn;
-  el.soundToggle.setAttribute("aria-pressed", String(state.soundOn));
-  el.soundToggle.textContent = state.soundOn ? "🔊 おと ON" : "🔇 おと OFF";
-});
+    .finger-tag{
+      position:absolute;
+      right:5px;
+      top:5px;
+      min-width:18px;
+      height:18px;
+      padding:0 4px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      font-size:10px;
+      font-weight:900;
+      color:#234;
+      border:1px solid rgba(0,0,0,.08);
+    }
 
-document.addEventListener("keydown", (event) => {
-  const key = event.key.toLowerCase();
-  if (fingerMap[key]) pressKeyVisual(key);
-});
+    .f-l5,.f-r5{ background:var(--finger-thumb); }
+    .f-l4,.f-r4{ background:#fecaca; }
+    .f-l3,.f-r3{ background:#fde68a; }
+    .f-l2,.f-r2{ background:#bfdbfe; }
+    .f-l1,.f-r1{ background:#a7f3d0; }
 
-buildRowOptions();
-createKeyboard();
-populateRowVisibility();
-setModeBadge();
-updateGuide(state.currentItem, "");
-updateStatus();
+    .hands{
+      margin-top:16px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+    }
+
+    .hand-card{
+      border:2px solid var(--line);
+      border-radius:18px;
+      padding:12px;
+      background:#fcfeff;
+    }
+
+    .hand-card h4{
+      margin:0 0 10px;
+      font-size:14px;
+    }
+
+    .finger-list{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:8px;
+    }
+
+    .finger{
+      border:2px solid #dde8f2;
+      border-radius:14px;
+      padding:10px 6px;
+      text-align:center;
+      font-size:12px;
+      font-weight:800;
+      background:#fff;
+    }
+
+    .finger.active{
+      outline:3px solid #60a5fa;
+      transform:translateY(-2px);
+    }
+
+    .footer-note{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--sub);
+      text-align:center;
+    }
+
+    .floating-stars{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:50;
+    }
+
+    .star{
+      position:absolute;
+      font-size:24px;
+      animation:floatUp 900ms ease-out forwards;
+      filter:drop-shadow(0 3px 6px rgba(0,0,0,.15));
+    }
+
+    @keyframes floatUp{
+      from{ transform:translateY(0) scale(.8); opacity:0; }
+      10%{ opacity:1; }
+      to{ transform:translateY(-90px) scale(1.3); opacity:0; }
+    }
+
+    .toggle-row{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .small-note{
+      font-size:12px;
+      color:var(--sub);
+      margin-top:6px;
+      line-height:1.55;
+    }
+
+    .kbd-help{
+      margin-top:8px;
+      font-size:13px;
+      color:#31597d;
+      background:#f3f9ff;
+      border:2px solid #d8ebff;
+      border-radius:14px;
+      padding:10px 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="floating-stars" id="floatingStars"></div>
+
+  <div class="app">
+    <div class="header">
+      <div class="title-wrap">
+        <h1>🎹 こどもローマ字タイピング</h1>
+        <p>かな → ローマ字 → どのキーをどの指で押すか、見て・押して・音で学べる</p>
+      </div>
+      <div class="mascot">
+        <div class="mascot-face" id="mascotFace">😄</div>
+        <div>
+          <div style="font-weight:800;">たいぴんぐコーチ</div>
+          <div style="font-size:13px;color:var(--sub);" id="coachTopText">スタートをおして、はじめよう！</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel">
+        <div class="panel-head">れんしゅうせってい</div>
+        <div class="panel-body">
+          <div class="controls">
+            <div class="group">
+              <h3>① モード</h3>
+              <div class="btn-grid">
+                <button class="mode-btn selected" data-mode="row">行ごと</button>
+                <button class="mode-btn" data-mode="all">あからじゅん</button>
+                <button class="mode-btn" data-mode="random">ランダム</button>
+                <button class="mode-btn" data-mode="dakuten">にごり・ちいさいゃゅょ</button>
+              </div>
+            </div>
+
+            <div class="group" id="rowGroup">
+              <h3>② 行をえらぶ</h3>
+              <div class="btn-grid cols-3">
+                <button class="row-btn selected" data-row="a">あ行</button>
+                <button class="row-btn" data-row="ka">か行</button>
+                <button class="row-btn" data-row="sa">さ行</button>
+                <button class="row-btn" data-row="ta">た行</button>
+                <button class="row-btn" data-row="na">な行</button>
+                <button class="row-btn" data-row="ha">は行</button>
+                <button class="row-btn" data-row="ma">ま行</button>
+                <button class="row-btn" data-row="ya">や行</button>
+                <button class="row-btn" data-row="ra">ら行</button>
+                <button class="row-btn" data-row="wa">わ行</button>
+                <button class="row-btn" data-row="n">ん</button>
+                <button class="row-btn" data-row="mix">おまかせ</button>
+              </div>
+            </div>
+
+            <div class="group">
+              <h3>③ オプション</h3>
+              <div class="toggle-row">
+                <button id="soundBtn" class="selected">🔊 おと ON</button>
+                <button id="guideBtn" class="selected">👆 指ガイド ON</button>
+                <button id="romanBtn" class="selected">🔤 ローマ字表示 ON</button>
+              </div>
+              <div class="small-note">
+                パソコンのキーボードをそのまま使えます。<br />
+                まちがえたときも、つぎに押すキーを光らせます。
+              </div>
+            </div>
+
+            <div class="group">
+              <h3>④ スタート / リセット</h3>
+              <div class="btn-grid">
+                <button class="primary" id="startBtn">▶ スタート</button>
+                <button class="secondary" id="nextBtn">⏭ つぎへ</button>
+                <button class="ghost" id="repeatBtn">🔁 もういちど</button>
+                <button class="ghost" id="resetBtn">🧹 リセット</button>
+              </div>
+            </div>
+
+            <div class="group">
+              <h3>せいせき</h3>
+              <div class="status-cards">
+                <div class="card-mini">
+                  <div class="label">れんぞく せいかい</div>
+                  <div class="value" id="streakValue">0</div>
+                </div>
+                <div class="card-mini">
+                  <div class="label">せいかい もんだい</div>
+                  <div class="value" id="correctValue">0</div>
+                </div>
+                <div class="card-mini">
+                  <div class="label">ミス</div>
+                  <div class="value" id="mistakeValue">0</div>
+                </div>
+                <div class="card-mini">
+                  <div class="label">しんちょく</div>
+                  <div class="value" id="progressValue">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-area">
+        <div class="question-wrap">
+          <section class="big-card">
+            <div class="question-top">
+              <div class="chip" id="modeLabel">モード：行ごと</div>
+              <div class="chip" id="rowLabel">れんしゅう：あ行</div>
+            </div>
+
+            <div class="kana-display">
+              <div class="kana-main" id="kanaMain">あ</div>
+              <div class="romaji-answer" id="typedText">a</div>
+
+              <div class="hint-line" id="romajiHintLine"></div>
+
+              <div class="message-box info" id="messageBox">スタートをおしてね</div>
+
+              <div class="progress-box">
+                <div class="progress-label">
+                  <span>もんだいの しんちょく</span>
+                  <span id="progressText">0 / 0</span>
+                </div>
+                <div class="bar"><span id="progressBar"></span></div>
+              </div>
+
+              <div class="kbd-help">
+                キーボードで入力してください。<br />
+                いま押すキーは青く光ります。つかう指も下で光ります。
+              </div>
+            </div>
+          </section>
+
+          <section class="big-card coach">
+            <div class="coach-bubble" id="coachBubble">
+              こんにちは。<br />
+              かなを見て、ローマ字を入力しよう。<br />
+              まずは <strong>スタート</strong> を押してね。
+            </div>
+
+            <div class="legend">
+              <div class="legend-item"><span class="dot" style="background:#dbeafe"></span>いま押すキー</div>
+              <div class="legend-item"><span class="dot" style="background:#dcfce7"></span>押せたキー</div>
+              <div class="legend-item"><span class="dot" style="background:#ffe4e6"></span>まちがい</div>
+            </div>
+
+            <div class="footer-note">
+              ※ 標準的なJIS配列をイメージした学習用イラストです。<br />
+              英字入力のホームポジション練習に向いています。
+            </div>
+          </section>
+        </div>
+
+        <section class="keyboard-card">
+          <div class="keyboard-wrap">
+            <div class="keyboard" id="keyboard"></div>
+
+            <div class="hands">
+              <div class="hand-card">
+                <h4>ひだりて</h4>
+                <div class="finger-list">
+                  <div class="finger" id="finger-l5">おや指</div>
+                  <div class="finger" id="finger-l4">くすり指</div>
+                  <div class="finger" id="finger-l3">なか指</div>
+                  <div class="finger" id="finger-l2">ひとさし指</div>
+                  <div class="finger" id="finger-l1">ひとさし外</div>
+                </div>
+              </div>
+              <div class="hand-card">
+                <h4>みぎて</h4>
+                <div class="finger-list">
+                  <div class="finger" id="finger-r1">ひとさし内</div>
+                  <div class="finger" id="finger-r2">ひとさし指</div>
+                  <div class="finger" id="finger-r3">なか指</div>
+                  <div class="finger" id="finger-r4">くすり指</div>
+                  <div class="finger" id="finger-r5">おや指</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      // =========================
+      // データ
+      // =========================
+      const WORDS = {
+        a: [
+          { kana: "あ", romaji: "a" }, { kana: "い", romaji: "i" }, { kana: "う", romaji: "u" },
+          { kana: "え", romaji: "e" }, { kana: "お", romaji: "o" }
+        ],
+        ka: [
+          { kana: "か", romaji: "ka" }, { kana: "き", romaji: "ki" }, { kana: "く", romaji: "ku" },
+          { kana: "け", romaji: "ke" }, { kana: "こ", romaji: "ko" }
+        ],
+        sa: [
+          { kana: "さ", romaji: "sa" }, { kana: "し", romaji: "shi" }, { kana: "す", romaji: "su" },
+          { kana: "せ", romaji: "se" }, { kana: "そ", romaji: "so" }
+        ],
+        ta: [
+          { kana: "た", romaji: "ta" }, { kana: "ち", romaji: "chi" }, { kana: "つ", romaji: "tsu" },
+          { kana: "て", romaji: "te" }, { kana: "と", romaji: "to" }
+        ],
+        na: [
+          { kana: "な", romaji: "na" }, { kana: "に", romaji: "ni" }, { kana: "ぬ", romaji: "nu" },
+          { kana: "ね", romaji: "ne" }, { kana: "の", romaji: "no" }
+        ],
+        ha: [
+          { kana: "は", romaji: "ha" }, { kana: "ひ", romaji: "hi" }, { kana: "ふ", romaji: "fu" },
+          { kana: "へ", romaji: "he" }, { kana: "ほ", romaji: "ho" }
+        ],
+        ma: [
+          { kana: "ま", romaji: "ma" }, { kana: "み", romaji: "mi" }, { kana: "む", romaji: "mu" },
+          { kana: "め", romaji: "me" }, { kana: "も", romaji: "mo" }
+        ],
+        ya: [
+          { kana: "や", romaji: "ya" }, { kana: "ゆ", romaji: "yu" }, { kana: "よ", romaji: "yo" }
+        ],
+        ra: [
+          { kana: "ら", romaji: "ra" }, { kana: "り", romaji: "ri" }, { kana: "る", romaji: "ru" },
+          { kana: "れ", romaji: "re" }, { kana: "ろ", romaji: "ro" }
+        ],
+        wa: [
+          { kana: "わ", romaji: "wa" }, { kana: "を", romaji: "wo" }
+        ],
+        n: [
+          { kana: "ん", romaji: "n" }
+        ],
+        dakuten: [
+          { kana: "が", romaji: "ga" }, { kana: "ぎ", romaji: "gi" }, { kana: "ぐ", romaji: "gu" },
+          { kana: "げ", romaji: "ge" }, { kana: "ご", romaji: "go" },
+          { kana: "ざ", romaji: "za" }, { kana: "じ", romaji: "ji" }, { kana: "ず", romaji: "zu" },
+          { kana: "ぜ", romaji: "ze" }, { kana: "ぞ", romaji: "zo" },
+          { kana: "だ", romaji: "da" }, { kana: "ぢ", romaji: "ji" }, { kana: "づ", romaji: "zu" },
+          { kana: "で", romaji: "de" }, { kana: "ど", romaji: "do" },
+          { kana: "ば", romaji: "ba" }, { kana: "び", romaji: "bi" }, { kana: "ぶ", romaji: "bu" },
+          { kana: "べ", romaji: "be" }, { kana: "ぼ", romaji: "bo" },
+          { kana: "ぱ", romaji: "pa" }, { kana: "ぴ", romaji: "pi" }, { kana: "ぷ", romaji: "pu" },
+          { kana: "ぺ", romaji: "pe" }, { kana: "ぽ", romaji: "po" },
+          { kana: "きゃ", romaji: "kya" }, { kana: "きゅ", romaji: "kyu" }, { kana: "きょ", romaji: "kyo" },
+          { kana: "しゃ", romaji: "sha" }, { kana: "しゅ", romaji: "shu" }, { kana: "しょ", romaji: "sho" },
+          { kana: "ちゃ", romaji: "cha" }, { kana: "ちゅ", romaji: "chu" }, { kana: "ちょ", romaji: "cho" },
+          { kana: "にゃ", romaji: "nya" }, { kana: "にゅ", romaji: "nyu" }, { kana: "にょ", romaji: "nyo" },
+          { kana: "ひゃ", romaji: "hya" }, { kana: "ひゅ", romaji: "hyu" }, { kana: "ひょ", romaji: "hyo" },
+          { kana: "みゃ", romaji: "mya" }, { kana: "みゅ", romaji: "myu" }, { kana: "みょ", romaji: "myo" },
+          { kana: "りゃ", romaji: "rya" }, { kana: "りゅ", romaji: "ryu" }, { kana: "りょ", romaji: "ryo" },
+          { kana: "ぎゃ", romaji: "gya" }, { kana: "ぎゅ", romaji: "gyu" }, { kana: "ぎょ", romaji: "gyo" },
+          { kana: "じゃ", romaji: "ja" }, { kana: "じゅ", romaji: "ju" }, { kana: "じょ", romaji: "jo" },
+          { kana: "びゃ", romaji: "bya" }, { kana: "びゅ", romaji: "byu" }, { kana: "びょ", romaji: "byo" },
+          { kana: "ぴゃ", romaji: "pya" }, { kana: "ぴゅ", romaji: "pyu" }, { kana: "ぴょ", romaji: "pyo" }
+        ]
+      };
+
+      const ALL_ORDER = [
+        ...WORDS.a, ...WORDS.ka, ...WORDS.sa, ...WORDS.ta, ...WORDS.na,
+        ...WORDS.ha, ...WORDS.ma, ...WORDS.ya, ...WORDS.ra, ...WORDS.wa, ...WORDS.n,
+        ...WORDS.dakuten
+      ];
+
+      const MIX_ROWS = ["a","ka","sa","ta","na","ha","ma","ya","ra","wa","n"];
+
+      const KEYBOARD_LAYOUT = [
+        [
+          { code:"Backquote", en:"`", jp:"" , finger:"l4", cls:"small"},
+          { code:"Digit1", en:"1", jp:"" , finger:"l4", cls:"small"},
+          { code:"Digit2", en:"2", jp:"" , finger:"l3", cls:"small"},
+          { code:"Digit3", en:"3", jp:"" , finger:"l2", cls:"small"},
+          { code:"Digit4", en:"4", jp:"" , finger:"l1", cls:"small"},
+          { code:"Digit5", en:"5", jp:"" , finger:"l1", cls:"small"},
+          { code:"Digit6", en:"6", jp:"" , finger:"r1", cls:"small"},
+          { code:"Digit7", en:"7", jp:"" , finger:"r1", cls:"small"},
+          { code:"Digit8", en:"8", jp:"" , finger:"r2", cls:"small"},
+          { code:"Digit9", en:"9", jp:"" , finger:"r3", cls:"small"},
+          { code:"Digit0", en:"0", jp:"" , finger:"r4", cls:"small"},
+          { code:"Minus", en:"-", jp:"" , finger:"r4", cls:"small"},
+          { code:"Equal", en:"=", jp:"" , finger:"r4", cls:"small"},
+          { code:"Backspace", en:"⌫", jp:"" , finger:"r4", cls:"wide small"}
+        ],
+        [
+          { code:"Tab", en:"Tab", jp:"" , finger:"l4", cls:"wide small"},
+          { code:"KeyQ", en:"Q", jp:"た", finger:"l4"},
+          { code:"KeyW", en:"W", jp:"て", finger:"l3"},
+          { code:"KeyE", en:"E", jp:"い", finger:"l2"},
+          { code:"KeyR", en:"R", jp:"す", finger:"l1"},
+          { code:"KeyT", en:"T", jp:"か", finger:"l1"},
+          { code:"KeyY", en:"Y", jp:"ん", finger:"r1"},
+          { code:"KeyU", en:"U", jp:"な", finger:"r1"},
+          { code:"KeyI", en:"I", jp:"に", finger:"r2"},
+          { code:"KeyO", en:"O", jp:"ら", finger:"r3"},
+          { code:"KeyP", en:"P", jp:"せ", finger:"r4"},
+          { code:"BracketLeft", en:"[", jp:"゛", finger:"r4", cls:"small"},
+          { code:"BracketRight", en:"]", jp:"゜", finger:"r4", cls:"small"},
+          { code:"Backslash", en:"¥", jp:"" , finger:"r4", cls:"wide small"}
+        ],
+        [
+          { code:"CapsLock", en:"Caps", jp:"" , finger:"l4", cls:"wider small"},
+          { code:"KeyA", en:"A", jp:"ち", finger:"l4"},
+          { code:"KeyS", en:"S", jp:"と", finger:"l3"},
+          { code:"KeyD", en:"D", jp:"し", finger:"l2"},
+          { code:"KeyF", en:"F", jp:"は", finger:"l1"},
+          { code:"KeyG", en:"G", jp:"き", finger:"l1"},
+          { code:"KeyH", en:"H", jp:"く", finger:"r1"},
+          { code:"KeyJ", en:"J", jp:"ま", finger:"r1"},
+          { code:"KeyK", en:"K", jp:"の", finger:"r2"},
+          { code:"KeyL", en:"L", jp:"り", finger:"r3"},
+          { code:"Semicolon", en:";", jp:"れ", finger:"r4", cls:"small"},
+          { code:"Quote", en:"'", jp:"け", finger:"r4", cls:"small"},
+          { code:"Enter", en:"Enter", jp:"", finger:"r4", cls:"wider small"}
+        ],
+        [
+          { code:"ShiftLeft", en:"Shift", jp:"", finger:"l5", cls:"wider small"},
+          { code:"KeyZ", en:"Z", jp:"つ", finger:"l4"},
+          { code:"KeyX", en:"X", jp:"さ", finger:"l3"},
+          { code:"KeyC", en:"C", jp:"そ", finger:"l2"},
+          { code:"KeyV", en:"V", jp:"ひ", finger:"l1"},
+          { code:"KeyB", en:"B", jp:"こ", finger:"l1"},
+          { code:"KeyN", en:"N", jp:"み", finger:"r1"},
+          { code:"KeyM", en:"M", jp:"も", finger:"r1"},
+          { code:"Comma", en:",", jp:"ね", finger:"r2", cls:"small"},
+          { code:"Period", en:".", jp:"る", finger:"r3", cls:"small"},
+          { code:"Slash", en:"/", jp:"め", finger:"r4", cls:"small"},
+          { code:"ShiftRight", en:"Shift", jp:"", finger:"r5", cls:"wider small"}
+        ],
+        [
+          { code:"ControlLeft", en:"Ctrl", jp:"", finger:"l5", cls:"small"},
+          { code:"MetaLeft", en:"⌘", jp:"", finger:"l5", cls:"small"},
+          { code:"AltLeft", en:"Alt", jp:"", finger:"l5", cls:"small"},
+          { code:"Space", en:"Space", jp:"", finger:"r5", cls:"space small"},
+          { code:"AltRight", en:"Alt", jp:"", finger:"r5", cls:"small"},
+          { code:"MetaRight", en:"⌘", jp:"", finger:"r5", cls:"small"},
+          { code:"ContextMenu", en:"☰", jp:"", finger:"r5", cls:"small"},
+          { code:"ControlRight", en:"Ctrl", jp:"", finger:"r5", cls:"small"}
+        ]
+      ];
+
+      const CHAR_TO_CODE = {
+        a:"KeyA", b:"KeyB", c:"KeyC", d:"KeyD", e:"KeyE", f:"KeyF", g:"KeyG", h:"KeyH",
+        i:"KeyI", j:"KeyJ", k:"KeyK", l:"KeyL", m:"KeyM", n:"KeyN", o:"KeyO", p:"KeyP",
+        q:"KeyQ", r:"KeyR", s:"KeyS", t:"KeyT", u:"KeyU", v:"KeyV", w:"KeyW", x:"KeyX",
+        y:"KeyY", z:"KeyZ", "-":"Minus"
+      };
+
+      const CODE_TO_FINGER = {};
+      KEYBOARD_LAYOUT.flat().forEach(key => {
+        CODE_TO_FINGER[key.code] = key.finger;
+      });
+
+      // =========================
+      // 状態
+      // =========================
+      const state = {
+        mode: "row",
+        row: "a",
+        sound: true,
+        guide: true,
+        showRoman: true,
+        started: false,
+        queue: [],
+        currentIndex: 0,
+        current: { kana: "あ", romaji: "a" },
+        typed: "",
+        streak: 0,
+        correct: 0,
+        mistakes: 0
+      };
+
+      // =========================
+      // 要素
+      // =========================
+      const keyboardEl = document.getElementById("keyboard");
+      const kanaMain = document.getElementById("kanaMain");
+      const typedText = document.getElementById("typedText");
+      const romajiHintLine = document.getElementById("romajiHintLine");
+      const messageBox = document.getElementById("messageBox");
+      const progressText = document.getElementById("progressText");
+      const progressBar = document.getElementById("progressBar");
+      const streakValue = document.getElementById("streakValue");
+      const correctValue = document.getElementById("correctValue");
+      const mistakeValue = document.getElementById("mistakeValue");
+      const progressValue = document.getElementById("progressValue");
+      const coachBubble = document.getElementById("coachBubble");
+      const coachTopText = document.getElementById("coachTopText");
+      const mascotFace = document.getElementById("mascotFace");
+      const modeLabel = document.getElementById("modeLabel");
+      const rowLabel = document.getElementById("rowLabel");
+      const rowGroup = document.getElementById("rowGroup");
+
+      // =========================
+      // 描画
+      // =========================
+      function buildKeyboard() {
+        keyboardEl.innerHTML = "";
+        KEYBOARD_LAYOUT.forEach(row => {
+          const rowEl = document.createElement("div");
+          rowEl.className = "row";
+
+          row.forEach(key => {
+            const keyEl = document.createElement("div");
+            keyEl.className = `key ${key.cls || ""}`.trim();
+            keyEl.dataset.code = key.code;
+            keyEl.dataset.finger = key.finger;
+            keyEl.innerHTML = `
+              <div class="jp">${key.jp || "&nbsp;"}</div>
+              <div class="en">${key.en}</div>
+              <div class="finger-tag f-${key.finger}">${fingerShort(key.finger)}</div>
+            `;
+            rowEl.appendChild(keyEl);
+          });
+
+          keyboardEl.appendChild(rowEl);
+        });
+      }
+
+      function fingerShort(f){
+        const map = {
+          l5:"親", l4:"薬", l3:"中", l2:"人", l1:"人",
+          r1:"人", r2:"人", r3:"中", r4:"薬", r5:"親"
+        };
+        return map[f] || "";
+      }
+
+      function setMessage(text, kind="info"){
+        messageBox.textContent = text;
+        messageBox.className = `message-box ${kind}`;
+      }
+
+      function updateScore(){
+        streakValue.textContent = state.streak;
+        correctValue.textContent = state.correct;
+        mistakeValue.textContent = state.mistakes;
+        const total = state.queue.length || 0;
+        const done = Math.min(state.currentIndex, total);
+        const pct = total ? Math.round(done / total * 100) : 0;
+        progressValue.textContent = pct + "%";
+      }
+
+      function updateProgress(){
+        const total = state.queue.length || 0;
+        const done = Math.min(state.currentIndex, total);
+        progressText.textContent = `${done} / ${total}`;
+        const pct = total ? (done / total) * 100 : 0;
+        progressBar.style.width = pct + "%";
+      }
+
+      function renderCurrent(){
+        kanaMain.textContent = state.current.kana;
+        typedText.textContent = state.showRoman ? (state.typed || state.current.romaji) : (state.typed ? "●".repeat(state.typed.length) : "●".repeat(state.current.romaji.length));
+        renderRomajiHint();
+        highlightGuide();
+      }
+
+      function renderRomajiHint(){
+        romajiHintLine.innerHTML = "";
+        if(!state.showRoman){
+          romajiHintLine.style.display = "none";
+          return;
+        }
+        romajiHintLine.style.display = "flex";
+
+        const answer = state.current.romaji;
+        [...answer].forEach((ch, i) => {
+          const span = document.createElement("div");
+          span.className = "romaji-pill";
+          span.textContent = ch;
+          if(i < state.typed.length) span.classList.add("done");
+          if(i === state.typed.length) span.classList.add("next");
+          romajiHintLine.appendChild(span);
+        });
+      }
+
+      function clearKeyStates(){
+        document.querySelectorAll(".key").forEach(k => k.classList.remove("active","next","wrong"));
+        document.querySelectorAll(".finger").forEach(f => f.classList.remove("active"));
+      }
+
+      function highlightGuide(wrongCode=null){
+        clearKeyStates();
+        if(!state.guide) return;
+
+        const nextChar = state.current.romaji[state.typed.length];
+        const nextCode = CHAR_TO_CODE[nextChar];
+        if(nextCode){
+          const keyEl = document.querySelector(`.key[data-code="${nextCode}"]`);
+          if(keyEl){
+            keyEl.classList.add("active","next");
+          }
+          const finger = CODE_TO_FINGER[nextCode];
+          if(finger){
+            const fingerEl = document.getElementById(`finger-${finger}`);
+            if(fingerEl) fingerEl.classList.add("active");
+          }
+        }
+
+        if(wrongCode){
+          const wrongEl = document.querySelector(`.key[data-code="${wrongCode}"]`);
+          if(wrongEl) wrongEl.classList.add("wrong");
+        }
+      }
+
+      function updateLabels(){
+        const modeMap = {
+          row:"モード：行ごと",
+          all:"モード：あからじゅん",
+          random:"モード：ランダム",
+          dakuten:"モード：にごり・ちいさいゃゅょ"
+        };
+        const rowMap = {
+          a:"れんしゅう：あ行",
+          ka:"れんしゅう：か行",
+          sa:"れんしゅう：さ行",
+          ta:"れんしゅう：た行",
+          na:"れんしゅう：な行",
+          ha:"れんしゅう：は行",
+          ma:"れんしゅう：ま行",
+          ya:"れんしゅう：や行",
+          ra:"れんしゅう：ら行",
+          wa:"れんしゅう：わ行",
+          n:"れんしゅう：ん",
+          mix:"れんしゅう：おまかせ"
+        };
+        modeLabel.textContent = modeMap[state.mode];
+        rowLabel.textContent = rowMap[state.row] || "れんしゅう：いろいろ";
+        rowGroup.style.display = state.mode === "row" ? "block" : "none";
+      }
+
+      // =========================
+      // 出題
+      // =========================
+      function shuffle(arr){
+        const a = [...arr];
+        for(let i = a.length - 1; i > 0; i--){
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function buildQueue(){
+        if(state.mode === "row"){
+          if(state.row === "mix"){
+            return shuffle(MIX_ROWS.flatMap(r => WORDS[r])).slice(0, 20);
+          }
+          return [...WORDS[state.row]];
+        }
+        if(state.mode === "all"){
+          return [...ALL_ORDER];
+        }
+        if(state.mode === "random"){
+          return shuffle(ALL_ORDER).slice(0, 30);
+        }
+        if(state.mode === "dakuten"){
+          return shuffle(WORDS.dakuten).slice(0, 24);
+        }
+        return [...WORDS.a];
+      }
+
+      function startPractice(){
+        state.started = true;
+        state.queue = buildQueue();
+        state.currentIndex = 0;
+        state.streak = 0;
+        state.correct = 0;
+        state.mistakes = 0;
+        nextQuestion(true);
+        updateScore();
+        updateProgress();
+        coachTopText.textContent = "キーボードで入力してね";
+        coachBubble.innerHTML = "かなを見て、<strong>ローマ字</strong>を入力しよう。<br>青く光るキーと、つかう指を見てね。";
+        mascotFace.textContent = "🤓";
+      }
+
+      function nextQuestion(initial=false){
+        if(state.currentIndex >= state.queue.length){
+          finishPractice();
+          return;
+        }
+
+        state.current = state.queue[state.currentIndex];
+        state.typed = "";
+        renderCurrent();
+        updateProgress();
+        setMessage(initial ? "はじめよう！" : "つぎの もんだい！", "info");
+        if(state.sound) playTone(660, 0.05, "triangle");
+      }
+
+      function finishPractice(){
+        state.started = false;
+        state.current = { kana: "おわり", romaji: "owari" };
+        state.typed = state.current.romaji;
+        renderCurrent();
+        clearKeyStates();
+        setMessage("ぜんぶ おわったよ！", "ok");
+        coachBubble.innerHTML = `
+          よくできました！<br>
+          <strong>せいかい ${state.correct} もん</strong>、ミス ${state.mistakes} かい。<br>
+          もういちど やると もっと はやくなるよ。
+        `;
+        coachTopText.textContent = "おつかれさま！";
+        mascotFace.textContent = state.mistakes === 0 ? "🥳" : "😄";
+        burstStars();
+      }
+
+      function repeatCurrent(){
+        if(!state.started) return;
+        state.typed = "";
+        renderCurrent();
+        setMessage("もういちど！", "info");
+        coachBubble.innerHTML = "だいじょうぶ。<br>ゆっくり、ひと文字ずつでOK。";
+      }
+
+      // =========================
+      // 入力
+      // =========================
+      function normalizeKey(e){
+        const k = e.key;
+        if(!k || k.length !== 1) return null;
+        return k.toLowerCase();
+      }
+
+      function handleKeydown(e){
+        if(!state.started) return;
+
+        const key = normalizeKey(e);
+        if(!key) return;
+
+        const expected = state.current.romaji[state.typed.length];
+        if(!expected) return;
+
+        e.preventDefault();
+
+        if(key === expected){
+          state.typed += key;
+          renderCurrent();
+
+          if(state.sound) playTone(520 + state.typed.length * 80, 0.04, "sine");
+
+          if(state.typed === state.current.romaji){
+            state.correct++;
+            state.streak++;
+            state.currentIndex++;
+            updateScore();
+            updateProgress();
+            setMessage("せいかい！", "ok");
+            coachBubble.innerHTML = `いいね！ <strong>${state.current.kana}</strong> は <strong>${state.current.romaji}</strong> だよ。`;
+            mascotFace.textContent = ["😄","✨","🎉","😊"][Math.floor(Math.random()*4)];
+            popAtCenter("⭐");
+            if(state.sound) playSuccess();
+            setTimeout(() => nextQuestion(), 550);
+          }
+        } else {
+          state.mistakes++;
+          state.streak = 0;
+          updateScore();
+          setMessage("ちがうよ。青いキーを見てね。", "ng");
+          coachBubble.innerHTML = `
+            いまは <strong>${expected.toUpperCase()}</strong> を押そう。<br>
+            どの指を使うかも光っているよ。
+          `;
+          mascotFace.textContent = "🙂";
+          if(state.sound) playTone(180, 0.07, "square");
+          highlightGuide(CHAR_TO_CODE[key]);
+        }
+      }
+
+      // =========================
+      // 音
+      // =========================
+      let audioCtx = null;
+
+      function getAudio(){
+        if(!audioCtx){
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if(Ctx) audioCtx = new Ctx();
+        }
+        return audioCtx;
+      }
+
+      function playTone(freq=440, dur=0.06, type="sine"){
+        if(!state.sound) return;
+        const ctx = getAudio();
+        if(!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.07, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + dur + 0.02);
+      }
+
+      function playSuccess(){
+        playTone(523, 0.05, "triangle");
+        setTimeout(() => playTone(659, 0.06, "triangle"), 60);
+        setTimeout(() => playTone(784, 0.08, "triangle"), 130);
+      }
+
+      // =========================
+      // 演出
+      // =========================
+      function popAtCenter(emoji="⭐"){
+        const rect = kanaMain.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        spawnStar(x, y, emoji);
+      }
+
+      function burstStars(){
+        const rect = kanaMain.getBoundingClientRect();
+        for(let i=0;i<12;i++){
+          const x = rect.left + rect.width / 2 + (Math.random()*140 - 70);
+          const y = rect.top + rect.height / 2 + (Math.random()*70 - 35);
+          spawnStar(x, y, ["⭐","✨","🌟","🎈"][Math.floor(Math.random()*4)]);
+        }
+      }
+
+      function spawnStar(x,y,emoji="⭐"){
+        const wrap = document.getElementById("floatingStars");
+        const el = document.createElement("div");
+        el.className = "star";
+        el.textContent = emoji;
+        el.style.left = `${x}px`;
+        el.style.top = `${y}px`;
+        wrap.appendChild(el);
+        setTimeout(() => el.remove(), 900);
+      }
+
+      // =========================
+      // UIイベント
+      // =========================
+      document.querySelectorAll(".mode-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          state.mode = btn.dataset.mode;
+          updateLabels();
+
+          if(state.mode === "dakuten"){
+            rowLabel.textContent = "れんしゅう：にごり・ゃゅょ";
+          }
+        });
+      });
+
+      document.querySelectorAll(".row-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".row-btn").forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          state.row = btn.dataset.row;
+          updateLabels();
+        });
+      });
+
+      document.getElementById("soundBtn").addEventListener("click", (e) => {
+        state.sound = !state.sound;
+        e.currentTarget.classList.toggle("selected", state.sound);
+        e.currentTarget.textContent = state.sound ? "🔊 おと ON" : "🔇 おと OFF";
+      });
+
+      document.getElementById("guideBtn").addEventListener("click", (e) => {
+        state.guide = !state.guide;
+        e.currentTarget.classList.toggle("selected", state.guide);
+        e.currentTarget.textContent = state.guide ? "👆 指ガイド ON" : "✋ 指ガイド OFF";
+        renderCurrent();
+      });
+
+      document.getElementById("romanBtn").addEventListener("click", (e) => {
+        state.showRoman = !state.showRoman;
+        e.currentTarget.classList.toggle("selected", state.showRoman);
+        e.currentTarget.textContent = state.showRoman ? "🔤 ローマ字表示 ON" : "🔡 ローマ字表示 OFF";
+        renderCurrent();
+      });
+
+      document.getElementById("startBtn").addEventListener("click", () => {
+        startPractice();
+      });
+
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        if(!state.started) return;
+        state.currentIndex++;
+        nextQuestion();
+      });
+
+      document.getElementById("repeatBtn").addEventListener("click", repeatCurrent);
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        state.started = false;
+        state.queue = [];
+        state.currentIndex = 0;
+        state.current = { kana:"あ", romaji:"a" };
+        state.typed = "";
+        state.streak = 0;
+        state.correct = 0;
+        state.mistakes = 0;
+        updateScore();
+        updateProgress();
+        renderCurrent();
+        clearKeyStates();
+        updateLabels();
+        setMessage("スタートをおしてね", "info");
+        coachBubble.innerHTML = "また いつでも はじめられるよ。<br><strong>スタート</strong> を押してね。";
+        coachTopText.textContent = "スタートをおして、はじめよう！";
+        mascotFace.textContent = "😄";
+      });
+
+      window.addEventListener("keydown", handleKeydown);
+
+      // =========================
+      // 初期化
+      // =========================
+      buildKeyboard();
+      updateLabels();
+      updateScore();
+      updateProgress();
+      renderCurrent();
+      setMessage("スタートをおしてね", "info");
+    })();
+  </script>
+</body>
+</html>
